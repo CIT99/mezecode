@@ -4,11 +4,9 @@ import { useTestRunner } from '../hooks/useTestRunner'
 import { useCodeExecution } from '../hooks/useCodeExecution'
 import SplitPane from './SplitPane'
 import CodeEditor from './CodeEditor'
-import EditorControls from './EditorControls'
 import LivePreview from './LivePreview'
 import TestResultsPanel from './TestResultsPanel'
 import LessonHeader from './LessonHeader'
-import StepIndicator from './StepIndicator'
 import LessonNavigation from './LessonNavigation'
 import TestFeedback from './TestFeedback'
 import StepDescription from './StepDescription'
@@ -27,6 +25,8 @@ export default function LessonView() {
   const { runTests, testResults, isRunning } = useTestRunner()
   const { resetCode } = useCodeExecution()
   const [showHint, setShowHint] = useState(false)
+  const [activeTab, setActiveTab] = useState('instructions') // 'instructions' or 'code'
+  const [showLessonHeader, setShowLessonHeader] = useState(true)
 
   // Load current step data
   useEffect(() => {
@@ -70,28 +70,114 @@ export default function LessonView() {
 
   return (
     <div className="h-full flex flex-col bg-gray-900">
-      <LessonHeader lessonData={lessonData} />
-      <StepIndicator />
-      <StepDescription stepData={stepData} />
+      {showLessonHeader && (
+        <div className="flex-shrink-0">
+          <LessonHeader lessonData={lessonData} onClose={() => setShowLessonHeader(false)} />
+        </div>
+      )}
       
       <div className="flex-1 overflow-hidden">
         <SplitPane
+          defaultSplit={50}
           left={
             <div className="h-full flex flex-col bg-gray-900">
-              <EditorControls onReset={handleReset} onShowHint={handleShowHint} />
-              <div className="flex-1 overflow-hidden">
-                <CodeEditor />
-              </div>
-              {showHint && stepData?.hint && (
-                <div className="bg-yellow-900/30 border-t border-yellow-700 p-4">
-                  <div className="text-yellow-300 font-semibold mb-2">Hint:</div>
-                  <div className="text-yellow-200 text-sm whitespace-pre-wrap">{stepData.hint}</div>
+              {/* Tab Navigation */}
+              <div className="flex items-center justify-between border-b border-gray-700 bg-gray-800">
+                <div className="flex">
+                  <button
+                    onClick={() => setActiveTab('instructions')}
+                    className={`px-4 py-2 text-sm font-medium transition-colors ${
+                      activeTab === 'instructions'
+                        ? 'bg-gray-900 text-white border-b-2 border-blue-500'
+                        : 'text-gray-400 hover:text-gray-300'
+                    }`}
+                  >
+                    Instructions
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('code')}
+                    className={`px-4 py-2 text-sm font-medium transition-colors ${
+                      activeTab === 'code'
+                        ? 'bg-gray-900 text-white border-b-2 border-blue-500'
+                        : 'text-gray-400 hover:text-gray-300'
+                    }`}
+                  >
+                    Code
+                  </button>
                 </div>
-              )}
+                {activeTab === 'code' && (
+                  <div className="flex items-center gap-2 px-4">
+                    <button
+                      onClick={handleReset}
+                      className="px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 rounded text-white transition-colors"
+                      title="Reset to starter code"
+                    >
+                      Reset
+                    </button>
+                    {stepData?.hint && (
+                      <button
+                        onClick={handleShowHint}
+                        className={`px-3 py-1.5 text-sm rounded text-white transition-colors ${
+                          showHint
+                            ? 'bg-yellow-600 hover:bg-yellow-500'
+                            : 'bg-blue-600 hover:bg-blue-500'
+                        }`}
+                        title={showHint ? 'Hide hint' : 'Show hint'}
+                      >
+                        {showHint ? 'Hide Hint' : 'Hint'}
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Tab Content */}
+              <div className="flex-1 overflow-hidden flex flex-col">
+                {activeTab === 'instructions' ? (
+                  <>
+                    {stepData?.hint && (
+                      <div className="flex items-center justify-end p-2 bg-gray-800 border-b border-gray-700">
+                        <button
+                          onClick={handleShowHint}
+                          className={`px-3 py-1.5 text-sm rounded text-white transition-colors ${
+                            showHint
+                              ? 'bg-yellow-600 hover:bg-yellow-500'
+                              : 'bg-blue-600 hover:bg-blue-500'
+                          }`}
+                          title={showHint ? 'Hide hint' : 'Show hint'}
+                        >
+                          {showHint ? 'Hide Hint' : 'Show Hint'}
+                        </button>
+                      </div>
+                    )}
+                    <div className="flex-1 overflow-y-auto p-6">
+                      <StepDescription stepData={stepData} />
+                      {showHint && stepData?.hint && (
+                        <div className="mt-6 bg-yellow-900/30 border border-yellow-700 rounded-lg p-4">
+                          <div className="text-yellow-300 font-semibold mb-2">Hint:</div>
+                          <div className="text-yellow-200 text-sm whitespace-pre-wrap">{stepData.hint}</div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex-1 overflow-hidden">
+                      <CodeEditor />
+                    </div>
+                    {showHint && stepData?.hint && (
+                      <div className="bg-yellow-900/30 border-t border-yellow-700 p-4">
+                        <div className="text-yellow-300 font-semibold mb-2">Hint:</div>
+                        <div className="text-yellow-200 text-sm whitespace-pre-wrap">{stepData.hint}</div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
           }
           right={
-            <div className="h-full flex flex-col">
+            <div className="h-full flex flex-col bg-gray-900">
               <div className="flex-1 overflow-hidden">
                 <LivePreview />
               </div>
@@ -104,12 +190,14 @@ export default function LessonView() {
       </div>
 
       {testResults && (
-        <div className="px-4 py-2 border-t border-gray-700">
+        <div className="flex-shrink-0 px-4 py-2 border-t border-gray-700">
           <TestFeedback results={testResults} />
         </div>
       )}
 
-      <LessonNavigation />
+      <div className="flex-shrink-0">
+        <LessonNavigation />
+      </div>
     </div>
   )
 }

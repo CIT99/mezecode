@@ -55,7 +55,7 @@ export default function Header() {
   return (
     <header className="bg-gray-800 border-b border-gray-700 px-4 py-3">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 flex-1">
           <h1 className="text-xl font-bold text-white">Mezcode</h1>
           <nav className="flex gap-2">
             {lessons.map((lesson) => (
@@ -73,14 +73,21 @@ export default function Header() {
             ))}
           </nav>
         </div>
-        {currentLesson && (
-          <button
-            onClick={resetLesson}
-            className="px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 rounded text-white transition-colors"
-          >
-            Close Lesson
-          </button>
-        )}
+        <div className="flex-1 flex justify-center">
+          {lessonData && (
+            <h2 className="text-xl font-bold text-white">{lessonData.title}</h2>
+          )}
+        </div>
+        <div className="flex-1 flex justify-end">
+          {currentLesson && (
+            <button
+              onClick={resetLesson}
+              className="px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 rounded text-white transition-colors"
+            >
+              Close Lesson
+            </button>
+          )}
+        </div>
       </div>
     </header>
   )
