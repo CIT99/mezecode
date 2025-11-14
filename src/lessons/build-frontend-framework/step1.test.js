@@ -1,5 +1,5 @@
 // Test for createElement function
-const userCode = exports;
+// userCode is passed as the first parameter from the test runner
 
 // Test 1: createElement should exist
 test('createElement function exists', () => {

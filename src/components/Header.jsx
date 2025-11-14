@@ -1,10 +1,37 @@
+import { useEffect } from 'react'
 import { getAllLessons } from '../lessons/index'
 import { useLessonStore } from '../store/lessonStore'
 import { loadLesson } from '../services/lessonLoader'
 
 export default function Header() {
-  const { currentLesson, setCurrentLesson, setLessonData, setStepData, loadStepCode, resetLesson } = useLessonStore()
+  const { currentLesson, lessonData, setCurrentLesson, setLessonData, setStepData, loadStepCode, resetLesson, setCurrentStep } = useLessonStore()
   const lessons = getAllLessons()
+
+  // Restore persisted lesson on page load
+  useEffect(() => {
+    // Only run once on mount to restore persisted lesson
+    const persistedLesson = currentLesson
+    if (persistedLesson && !lessonData) {
+      // Lesson is persisted but data isn't loaded yet
+      loadLesson(persistedLesson)
+        .then((data) => {
+          setCurrentStep(0) // Always start at step 0 on page load
+          setLessonData(data)
+          
+          // Load first step
+          if (data.steps && data.steps.length > 0) {
+            const firstStep = data.steps[0]
+            setStepData(firstStep)
+            loadStepCode(firstStep.starterCode || '')
+          }
+        })
+        .catch((error) => {
+          console.error('Failed to restore lesson:', error)
+          resetLesson() // Reset if restoration fails
+        })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Only run once on mount
 
   const handleLessonSelect = async (lessonId) => {
     try {

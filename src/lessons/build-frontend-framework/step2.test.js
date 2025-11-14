@@ -1,4 +1,4 @@
-const userCode = exports;
+// userCode is passed as the first parameter from the test runner
 
 // Test 1: render function exists
 test('render function exists', () => {
