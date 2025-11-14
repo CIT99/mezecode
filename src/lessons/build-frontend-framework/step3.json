@@ -1,0 +1,6 @@
+{
+  "number": 3,
+  "title": "Add Props Support",
+  "description": "Enhance your render function to properly handle special props like 'className' (which should map to 'class' attribute) and event handlers (props starting with 'on' like 'onClick')."
+}
+

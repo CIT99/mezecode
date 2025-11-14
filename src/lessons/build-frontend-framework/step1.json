@@ -1,0 +1,6 @@
+{
+  "number": 1,
+  "title": "Create a Component Function",
+  "description": "In this step, you'll create a simple component function. A component should be a function that returns an object representing the element structure. Start by creating a function called `createElement` that takes a tag name, props, and children, and returns an object with `type`, `props`, and `children` properties."
+}
+

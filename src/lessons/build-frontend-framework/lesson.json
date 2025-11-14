@@ -1,0 +1,23 @@
+{
+  "id": "build-frontend-framework",
+  "title": "Build a Frontend Framework",
+  "description": "Learn to build a simple frontend framework from scratch. You'll create a basic component system, rendering engine, and state management.",
+  "steps": [
+    {
+      "number": 1,
+      "title": "Create a Component Function",
+      "description": "Start by creating a simple component function that returns JSX-like objects."
+    },
+    {
+      "number": 2,
+      "title": "Build a Render Function",
+      "description": "Create a render function that can convert your component objects into DOM elements."
+    },
+    {
+      "number": 3,
+      "title": "Add Props Support",
+      "description": "Extend your component system to accept and use props."
+    }
+  ]
+}
+

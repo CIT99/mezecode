@@ -1,0 +1,6 @@
+{
+  "number": 2,
+  "title": "Build a Render Function",
+  "description": "Now create a render function that takes your element object and creates actual DOM elements. The render function should create the element, set its properties, and recursively render children."
+}
+
