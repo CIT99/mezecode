@@ -1,6 +1,6 @@
 {
   "number": 2,
   "title": "Build a Render Function",
-  "description": "Now create a render function that takes your element object and creates actual DOM elements. The render function should create the element, set its properties, and recursively render children."
+  "description": "Now create a `render` function that converts your element objects into real DOM elements and adds them to the page.\n\n**What you need to do:**\n- Create a function called `render`\n- It should accept: `element` (object from createElement) and `container` (DOM element)\n- Create a DOM element using `document.createElement(element.type)`\n- Set all props as attributes on the DOM element\n- Handle children: if a child is a string, create a text node; if it's an object, recursively call render\n- Append the created element to the container\n\n**Example usage:**\n```javascript\nconst element = createElement('div', { id: 'test' }, 'Hello');\nconst container = document.getElementById('app');\nrender(element, container);\n// Creates: <div id=\"test\">Hello</div> inside the container\n```\n\n**Tips:**\n- Use `document.createElement()` to create DOM elements\n- Use `setAttribute()` to set attributes\n- Use `document.createTextNode()` for text content\n- Use `appendChild()` to add elements to the DOM\n- Remember to recursively call `render()` for nested element objects!"
 }
 

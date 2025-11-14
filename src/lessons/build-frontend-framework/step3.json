@@ -1,6 +1,6 @@
 {
   "number": 3,
   "title": "Add Props Support",
-  "description": "Enhance your render function to properly handle special props like 'className' (which should map to 'class' attribute) and event handlers (props starting with 'on' like 'onClick')."
+  "description": "Enhance your `render` function to handle special props that need special treatment.\n\n**What you need to do:**\n- Handle `className` prop: map it to the `class` attribute (since 'class' is a reserved word in JavaScript)\n- Handle event handlers: props starting with 'on' (like `onClick`, `onSubmit`) should be attached as event listeners\n- Keep regular props working as before\n\n**Special handling needed:**\n1. **className → class**: When you see `className` prop, use `setAttribute('class', value)`\n2. **Event handlers**: When a prop key starts with 'on' and the value is a function:\n   - Extract event name: remove 'on' prefix and lowercase (e.g., 'onClick' → 'click')\n   - Use `addEventListener(eventName, handler)` instead of `setAttribute`\n\n**Example usage:**\n```javascript\nconst handleClick = () => console.log('Clicked!');\nconst element = createElement('button', { \n  className: 'btn', \n  onClick: handleClick \n}, 'Click me');\nrender(element, container);\n// Creates: <button class=\"btn\">Click me</button> with click handler attached\n```\n\n**Tips:**\n- Check if `key === 'className'` before setting attributes\n- Check if `key.startsWith('on')` and `typeof value === 'function'` for event handlers\n- Use `key.slice(2).toLowerCase()` to convert 'onClick' to 'click'"
 }
 
