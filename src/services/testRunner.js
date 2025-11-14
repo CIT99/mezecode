@@ -5,11 +5,70 @@
  * In production, consider using a proper test framework or backend execution
  */
 
+import { sanitizeCode, sanitizeError, validateCode } from '../utils/sanitize'
+
 export const runTests = async (userCode, testCode) => {
   const results = []
   let allPassed = true
 
   try {
+    // Validate code before execution
+    const userCodeValidation = validateCode(userCode || '')
+    if (!userCodeValidation.valid) {
+      return {
+        passed: false,
+        results: [
+          {
+            name: 'Code validation error',
+            passed: false,
+            error: sanitizeError(userCodeValidation.reason || 'Invalid code'),
+          },
+        ],
+        totalTests: 0,
+        passedTests: 0,
+        error: sanitizeError(userCodeValidation.reason || 'Invalid code'),
+      }
+    }
+
+    const testCodeValidation = validateCode(testCode || '')
+    if (!testCodeValidation.valid) {
+      return {
+        passed: false,
+        results: [
+          {
+            name: 'Test code validation error',
+            passed: false,
+            error: sanitizeError(testCodeValidation.reason || 'Invalid test code'),
+          },
+        ],
+        totalTests: 0,
+        passedTests: 0,
+        error: sanitizeError(testCodeValidation.reason || 'Invalid test code'),
+      }
+    }
+
+    // Sanitize code before execution
+    let sanitizedUserCode = ''
+    let sanitizedTestCode = ''
+    try {
+      sanitizedUserCode = sanitizeCode(userCode || '')
+      sanitizedTestCode = sanitizeCode(testCode || '')
+    } catch (error) {
+      return {
+        passed: false,
+        results: [
+          {
+            name: 'Code sanitization error',
+            passed: false,
+            error: sanitizeError(error),
+          },
+        ],
+        totalTests: 0,
+        passedTests: 0,
+        error: sanitizeError(error),
+      }
+    }
+
     // Create a test context with common testing utilities
     const testContext = {
       describe: (name, fn) => {
@@ -17,9 +76,9 @@ export const runTests = async (userCode, testCode) => {
           fn()
         } catch (error) {
           results.push({
-            name: `describe: ${name}`,
+            name: `describe: ${sanitizeError(name)}`,
             passed: false,
-            error: error.message,
+            error: sanitizeError(error),
           })
           allPassed = false
         }
@@ -28,14 +87,14 @@ export const runTests = async (userCode, testCode) => {
         try {
           fn()
           results.push({
-            name,
+            name: sanitizeError(name),
             passed: true,
           })
         } catch (error) {
           results.push({
-            name,
+            name: sanitizeError(name),
             passed: false,
-            error: error.message,
+            error: sanitizeError(error),
           })
           allPassed = false
         }
@@ -44,14 +103,14 @@ export const runTests = async (userCode, testCode) => {
         try {
           fn()
           results.push({
-            name,
+            name: sanitizeError(name),
             passed: true,
           })
         } catch (error) {
           results.push({
-            name,
+            name: sanitizeError(name),
             passed: false,
-            error: error.message,
+            error: sanitizeError(error),
           })
           allPassed = false
         }
@@ -112,7 +171,7 @@ export const runTests = async (userCode, testCode) => {
 
     // Execute user code in a safe context
     const userContext = {}
-    const userFunction = new Function('exports', 'module', userCode || '')
+    const userFunction = new Function('exports', 'module', sanitizedUserCode)
     userFunction(userContext, { exports: userContext })
 
     // Execute test code with access to user code and test utilities
@@ -122,7 +181,7 @@ export const runTests = async (userCode, testCode) => {
       'describe',
       'it',
       'test',
-      testCode || ''
+      sanitizedTestCode
     )
     
     testFunction(
@@ -146,12 +205,12 @@ export const runTests = async (userCode, testCode) => {
         {
           name: 'Test execution error',
           passed: false,
-          error: error.message,
+          error: sanitizeError(error),
         },
       ],
       totalTests: 0,
       passedTests: 0,
-      error: error.message,
+      error: sanitizeError(error),
     }
   }
 }
@@ -168,12 +227,12 @@ export const runTestsWithTimeout = async (userCode, testCode, timeout = 5000) =>
       {
         name: 'Test timeout',
         passed: false,
-        error: error.message,
+        error: sanitizeError(error),
       },
     ],
     totalTests: 0,
     passedTests: 0,
-    error: error.message,
+    error: sanitizeError(error),
   }))
 }
 
