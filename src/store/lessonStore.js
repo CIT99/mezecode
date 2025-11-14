@@ -3,12 +3,13 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 
 export const useLessonStore = create(
   persist(
-    (set) => ({
+    (set, get) => ({
       currentLesson: null,
       currentStep: 0,
       code: '',
       lessonData: null,
       stepData: null,
+      stepCode: {}, // { lessonId: { stepIndex: code } }
       
       setCurrentLesson: (lesson) => {
         set({ 
@@ -19,7 +20,22 @@ export const useLessonStore = create(
       
       setCurrentStep: (stepIndex) => set({ currentStep: stepIndex }),
       
-      setCode: (code) => set({ code }),
+      setCode: (code) => {
+        const { currentLesson, currentStep } = get()
+        set({ code })
+        // Save code for current step
+        if (currentLesson !== null) {
+          set((state) => ({
+            stepCode: {
+              ...state.stepCode,
+              [currentLesson]: {
+                ...(state.stepCode[currentLesson] || {}),
+                [currentStep]: code,
+              },
+            },
+          }))
+        }
+      },
       
       setLessonData: (data) => set({ lessonData: data }),
       
@@ -34,14 +50,38 @@ export const useLessonStore = create(
       }),
       
       loadStepCode: (starterCode) => {
-        set({ code: starterCode || '' })
+        const { currentLesson, currentStep, stepCode } = get()
+        // Check if there's saved code for this step
+        const savedCode = currentLesson !== null 
+          ? stepCode[currentLesson]?.[currentStep] 
+          : null
+        
+        // Use saved code if available, otherwise use starter code
+        set({ code: savedCode !== undefined ? savedCode : (starterCode || '') })
+      },
+      
+      clearStepCode: (lessonId) => {
+        set((state) => {
+          const newStepCode = { ...state.stepCode }
+          if (lessonId) {
+            delete newStepCode[lessonId]
+          } else {
+            // Clear all if no lessonId provided
+            return { stepCode: {} }
+          }
+          return { stepCode: newStepCode }
+        })
       },
     }),
     {
       name: 'mezcode-lesson',
       storage: createJSONStorage(() => localStorage),
-      // Only persist currentLesson, not currentStep or code
-      partialize: (state) => ({ currentLesson: state.currentLesson }),
+      // Persist currentLesson, currentStep, and stepCode
+      partialize: (state) => ({ 
+        currentLesson: state.currentLesson,
+        currentStep: state.currentStep,
+        stepCode: state.stepCode,
+      }),
     }
   )
 )

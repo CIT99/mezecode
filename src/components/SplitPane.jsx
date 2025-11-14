@@ -44,8 +44,8 @@ export default function SplitPane({ left, right, defaultSplit = 50 }) {
         {left}
       </div>
       <div
-        className={`w-1 bg-gray-700 cursor-col-resize hover:bg-gray-600 transition-colors ${
-          isDragging ? 'bg-gray-500' : ''
+        className={`w-1 bg-gray-300 dark:bg-gray-700 cursor-col-resize hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors ${
+          isDragging ? 'bg-gray-400 dark:bg-gray-500' : ''
         }`}
         onMouseDown={handleMouseDown}
       />

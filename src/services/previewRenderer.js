@@ -16,25 +16,36 @@ export const createPreviewHTML = (code) => {
       margin: 0;
       padding: 20px;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-      background: #1a1a1a;
-      color: #fff;
+      background: #f8f9fa;
+      color: #333;
     }
     #root {
       padding: 20px;
     }
     .error {
-      color: #ff6b6b;
+      color: #6b7280;
       padding: 20px;
-      background: #2a1a1a;
-      border: 1px solid #ff6b6b;
-      border-radius: 4px;
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      border-left: 4px solid #9ca3af;
     }
     .success {
-      color: #51cf66;
+      color: #059669;
       padding: 20px;
-      background: #1a2a1a;
-      border: 1px solid #51cf66;
-      border-radius: 4px;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      border-radius: 8px;
+      border-left: 4px solid #10b981;
+    }
+    .error strong {
+      color: #4b5563;
+      font-weight: 600;
+    }
+    .error pre {
+      color: #6b7280;
+      margin-top: 8px;
+      font-size: 13px;
     }
   </style>
 </head>

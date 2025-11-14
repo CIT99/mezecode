@@ -55,10 +55,27 @@ export const useProgressStore = create(
         return get().testResults[lessonId]?.[stepIndex] || null
       },
       
-      resetProgress: () => set({
-        completedSteps: {},
-        testResults: {},
-      }),
+      resetProgress: (lessonId) => {
+        if (lessonId) {
+          // Reset progress for specific lesson
+          set((state) => {
+            const newCompletedSteps = { ...state.completedSteps }
+            const newTestResults = { ...state.testResults }
+            delete newCompletedSteps[lessonId]
+            delete newTestResults[lessonId]
+            return {
+              completedSteps: newCompletedSteps,
+              testResults: newTestResults,
+            }
+          })
+        } else {
+          // Reset all progress
+          set({
+            completedSteps: {},
+            testResults: {},
+          })
+        }
+      },
     }),
     {
       name: 'mezcode-progress',
