@@ -1,16 +1,85 @@
 /**
  * Dynamic lesson loading service
  * Loads lesson data from JSON files and associated code/test files
+ * Uses Vite's import.meta.glob for proper bundling in production
  */
+
+// Pre-load all lesson files using Vite's glob import
+// This ensures files are bundled and available in production
+// Using ?raw to import files as raw strings
+const lessonModules = import.meta.glob('/src/lessons/**/*.{json,js,md}', { 
+  eager: false,
+  query: '?raw'
+})
+
+// Cache for loaded modules
+const moduleCache = new Map()
+
+const getModulePath = (lessonId, filename) => {
+  return `/src/lessons/${lessonId}/${filename}`
+}
+
+const loadModule = async (path) => {
+  // Check cache first
+  if (moduleCache.has(path)) {
+    return moduleCache.get(path)
+  }
+
+  // Normalize path for comparison (handle both / and \)
+  const normalizedPath = path.replace(/\\/g, '/')
+  
+  // Try to find matching module
+  const moduleKey = Object.keys(lessonModules).find(key => {
+    const normalizedKey = key.replace(/\\/g, '/')
+    return normalizedKey === normalizedPath || normalizedKey.endsWith(normalizedPath)
+  })
+
+  if (!moduleKey) {
+    console.warn(`Module not found: ${path}`)
+    return null
+  }
+
+  try {
+    const moduleLoader = lessonModules[moduleKey]
+    if (typeof moduleLoader !== 'function') {
+      console.warn(`Module loader is not a function for: ${path}`)
+      return null
+    }
+    
+    const content = await moduleLoader()
+    // With ?raw query, content should be a string directly
+    // Handle both direct string returns and module objects
+    let textContent
+    if (typeof content === 'string') {
+      textContent = content
+    } else if (content && typeof content === 'object') {
+      // Handle module object - try default export first, then the object itself
+      textContent = content.default || content
+      if (typeof textContent !== 'string') {
+        textContent = JSON.stringify(textContent)
+      }
+    } else {
+      textContent = String(content || '')
+    }
+    moduleCache.set(path, textContent)
+    return textContent
+  } catch (error) {
+    console.warn(`Failed to load module: ${path}`, error)
+    return null
+  }
+}
 
 export const loadLesson = async (lessonId) => {
   try {
     // Load lesson.json
-    const lessonResponse = await fetch(`/src/lessons/${lessonId}/lesson.json`)
-    if (!lessonResponse.ok) {
+    const lessonJsonPath = getModulePath(lessonId, 'lesson.json')
+    const lessonJsonContent = await loadModule(lessonJsonPath)
+    
+    if (!lessonJsonContent) {
       throw new Error(`Failed to load lesson: ${lessonId}`)
     }
-    const lessonData = await lessonResponse.json()
+
+    const lessonData = JSON.parse(lessonJsonContent)
     
     // Load all step data
     const steps = []
@@ -37,50 +106,41 @@ export const loadLesson = async (lessonId) => {
 export const loadStepData = async (lessonId, stepNumber) => {
   try {
     // Load step.json
-    const stepResponse = await fetch(`/src/lessons/${lessonId}/step${stepNumber}.json`)
-    if (!stepResponse.ok) {
+    const stepJsonPath = getModulePath(lessonId, `step${stepNumber}.json`)
+    const stepJsonContent = await loadModule(stepJsonPath)
+    
+    if (!stepJsonContent) {
       throw new Error(`Failed to load step ${stepNumber} for lesson ${lessonId}`)
     }
-    const stepData = await stepResponse.json()
+
+    const stepData = JSON.parse(stepJsonContent)
     
     // Load starter code
-    try {
-      const starterResponse = await fetch(`/src/lessons/${lessonId}/step${stepNumber}.starter.js`)
-      if (starterResponse.ok) {
-        stepData.starterCode = await starterResponse.text()
-      }
-    } catch (e) {
-      console.warn(`No starter code for step ${stepNumber}`)
+    const starterPath = getModulePath(lessonId, `step${stepNumber}.starter.js`)
+    const starterCode = await loadModule(starterPath)
+    if (starterCode) {
+      stepData.starterCode = starterCode
     }
     
     // Load solution code
-    try {
-      const solutionResponse = await fetch(`/src/lessons/${lessonId}/step${stepNumber}.solution.js`)
-      if (solutionResponse.ok) {
-        stepData.solutionCode = await solutionResponse.text()
-      }
-    } catch (e) {
-      console.warn(`No solution code for step ${stepNumber}`)
+    const solutionPath = getModulePath(lessonId, `step${stepNumber}.solution.js`)
+    const solutionCode = await loadModule(solutionPath)
+    if (solutionCode) {
+      stepData.solutionCode = solutionCode
     }
     
     // Load hint
-    try {
-      const hintResponse = await fetch(`/src/lessons/${lessonId}/step${stepNumber}.hint.md`)
-      if (hintResponse.ok) {
-        stepData.hint = await hintResponse.text()
-      }
-    } catch (e) {
-      console.warn(`No hint for step ${stepNumber}`)
+    const hintPath = getModulePath(lessonId, `step${stepNumber}.hint.md`)
+    const hintContent = await loadModule(hintPath)
+    if (hintContent) {
+      stepData.hint = hintContent
     }
     
     // Load test file
-    try {
-      const testResponse = await fetch(`/src/lessons/${lessonId}/step${stepNumber}.test.js`)
-      if (testResponse.ok) {
-        stepData.testCode = await testResponse.text()
-      }
-    } catch (e) {
-      console.warn(`No test code for step ${stepNumber}`)
+    const testPath = getModulePath(lessonId, `step${stepNumber}.test.js`)
+    const testCode = await loadModule(testPath)
+    if (testCode) {
+      stepData.testCode = testCode
     }
     
     return stepData
