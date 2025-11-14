@@ -1,9 +1,17 @@
 import { useEffect, useRef } from 'react'
-import { EditorView } from '@codemirror/view'
+import { EditorView, lineNumbers, highlightActiveLine, keymap } from '@codemirror/view'
 import { EditorState } from '@codemirror/state'
 import { javascript } from '@codemirror/lang-javascript'
 import { oneDark } from '@codemirror/theme-one-dark'
-import { lineNumbers } from '@codemirror/view'
+import { indentUnit, foldGutter, foldKeymap, bracketMatching } from '@codemirror/language'
+import { 
+  defaultKeymap, 
+  history, 
+  historyKeymap,
+  indentWithTab
+} from '@codemirror/commands'
+import { autocompletion, completionKeymap, closeBrackets, closeBracketsKeymap } from '@codemirror/autocomplete'
+import { searchKeymap } from '@codemirror/search'
 import { useLessonStore } from '../store/lessonStore'
 
 export default function CodeEditor() {
@@ -17,15 +25,54 @@ export default function CodeEditor() {
     const startState = EditorState.create({
       doc: code || '',
       extensions: [
+        // Basic editor features
         lineNumbers(),
+        highlightActiveLine(),
+        history(),
+        
+        // Language support
         javascript({ jsx: true, typescript: false }),
+        
+        // Indentation
+        indentUnit.of('  '), // 2 spaces
+        
+        // Bracket matching and auto-closing
+        bracketMatching(),
+        closeBrackets(),
+        
+        // Code folding
+        foldGutter(),
+        
+        // Autocomplete
+        autocompletion({
+          activateOnTyping: true,
+          maxRenderedOptions: 10,
+          defaultKeymap: true,
+        }),
+        
+        // Theme
         oneDark,
+        
+        // Keymaps
+        keymap.of([
+          ...closeBracketsKeymap,
+          ...defaultKeymap,
+          ...searchKeymap,
+          ...historyKeymap,
+          ...foldKeymap,
+          ...completionKeymap,
+          indentWithTab, // Tab key for indentation
+        ]),
+        
+        // Update listener
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
             const newCode = update.state.doc.toString()
             setCode(newCode)
           }
         }),
+        
+        // Theme customization
         EditorView.theme({
           '&': {
             height: '100%',
@@ -37,6 +84,9 @@ export default function CodeEditor() {
           '.cm-scroller': {
             overflow: 'auto',
             height: '100%',
+          },
+          '.cm-focused': {
+            outline: 'none',
           },
         }),
       ],
