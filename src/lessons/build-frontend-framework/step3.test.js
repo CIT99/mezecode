@@ -1,35 +1,43 @@
 // userCode is passed as the first parameter from the test runner
 
-// Test 1: className maps to class attribute
-test('className maps to class attribute', () => {
-  const container = document.createElement('div');
-  const element = userCode.createElement('div', { className: 'my-class' });
-  userCode.render(element, container);
-  
-  const rendered = container.firstChild;
-  expect(rendered.className).toBe('my-class');
-  expect(rendered.getAttribute('class')).toBe('my-class');
+// Test 1: render function exists
+test('render function exists', () => {
+  expect(userCode.render).toBeDefined();
+  expect(typeof userCode.render).toBe('function');
 });
 
-// Test 2: Regular props still work
-test('regular props still work', () => {
+// Test 2: render creates DOM element
+test('render creates DOM element', () => {
   const container = document.createElement('div');
-  const element = userCode.createElement('input', { type: 'text', id: 'my-input' });
+  const element = userCode.createElement('div', { id: 'test' });
   userCode.render(element, container);
   
   const rendered = container.firstChild;
-  expect(rendered.type).toBe('text');
-  expect(rendered.id).toBe('my-input');
+  expect(rendered).toBeDefined();
+  expect(rendered.tagName.toLowerCase()).toBe('div');
+  expect(rendered.id).toBe('test');
 });
 
-// Test 3: className and regular props work together
-test('className and regular props work together', () => {
+// Test 3: render sets text content for text children
+test('render sets text content', () => {
   const container = document.createElement('div');
-  const element = userCode.createElement('button', { className: 'btn', id: 'my-button', type: 'submit' });
+  const element = userCode.createElement('p', {}, 'Hello World');
   userCode.render(element, container);
   
   const rendered = container.firstChild;
-  expect(rendered.className).toBe('btn');
-  expect(rendered.id).toBe('my-button');
-  expect(rendered.type).toBe('submit');
+  expect(rendered.textContent).toBe('Hello World');
 });
+
+// Test 4: render handles nested elements
+test('render handles nested elements', () => {
+  const container = document.createElement('div');
+  const inner = userCode.createElement('span', {}, 'Nested');
+  const outer = userCode.createElement('div', { id: 'outer' }, inner);
+  userCode.render(outer, container);
+  
+  const rendered = container.firstChild;
+  expect(rendered.id).toBe('outer');
+  expect(rendered.firstChild.tagName.toLowerCase()).toBe('span');
+  expect(rendered.firstChild.textContent).toBe('Nested');
+});
+

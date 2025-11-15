@@ -72,6 +72,42 @@ export const useLessonStore = create(
           return { stepCode: newStepCode }
         })
       },
+      
+      clearCurrentStepCode: () => {
+        const { currentLesson, currentStep } = get()
+        if (currentLesson !== null && currentStep !== undefined) {
+          set((state) => {
+            const newStepCode = { ...state.stepCode }
+            if (newStepCode[currentLesson]) {
+              const lessonStepCode = { ...newStepCode[currentLesson] }
+              delete lessonStepCode[currentStep]
+              newStepCode[currentLesson] = lessonStepCode
+            }
+            return { stepCode: newStepCode }
+          })
+        }
+      },
+      
+      resetToStarterCode: (starterCode) => {
+        const { currentLesson, currentStep } = get()
+        // Clear saved code for current step and set code to starter code in one operation
+        if (currentLesson !== null && currentStep !== undefined) {
+          set((state) => {
+            const newStepCode = { ...state.stepCode }
+            if (newStepCode[currentLesson]) {
+              const lessonStepCode = { ...newStepCode[currentLesson] }
+              delete lessonStepCode[currentStep]
+              newStepCode[currentLesson] = lessonStepCode
+            }
+            return { 
+              code: starterCode || '',
+              stepCode: newStepCode
+            }
+          })
+        } else {
+          set({ code: starterCode || '' })
+        }
+      },
     }),
     {
       name: 'mezcode-lesson',

@@ -1,111 +1,115 @@
-## Hint: Enhancing Render with Special Props
+## Hint: Building the Render Function
 
-### Understanding Special Props
+### Understanding the Task
 
-Some props need special handling because they don't map directly to HTML attributes:
-- `className` → needs to become the `class` attribute (since `class` is a reserved word in JavaScript)
-- Event handlers (`onClick`, `onSubmit`, etc.) → need to be attached as event listeners, not attributes
+The `render` function converts your virtual DOM element objects (from `createElement`) into real DOM elements that can be displayed in the browser.
 
-### Handling className
+### Key DOM APIs You'll Need
 
-The `className` prop should map to the HTML `class` attribute:
+1. **Creating Elements:**
+   ```javascript
+   const div = document.createElement('div');
+   ```
 
+2. **Setting Attributes:**
+   ```javascript
+   element.setAttribute('id', 'my-id');
+   // or
+   element.id = 'my-id';
+   ```
+
+3. **Creating Text Nodes:**
+   ```javascript
+   const textNode = document.createTextNode('Hello');
+   ```
+
+4. **Appending Children:**
+   ```javascript
+   parentElement.appendChild(childElement);
+   ```
+
+### Step-by-Step Implementation
+
+1. **Create the DOM element:**
+   ```javascript
+   const domElement = document.createElement(element.type);
+   ```
+   - `element.type` contains the tag name (e.g., 'div', 'span')
+
+2. **Set all props as attributes:**
+   ```javascript
+   Object.keys(element.props).forEach(key => {
+     domElement.setAttribute(key, element.props[key]);
+   });
+   ```
+   - Iterate through all keys in `element.props`
+   - Set each as an attribute on the DOM element
+
+3. **Handle children:**
+   ```javascript
+   element.children.forEach(child => {
+     if (typeof child === 'string') {
+       // It's text - create a text node
+       domElement.appendChild(document.createTextNode(child));
+     } else {
+       // It's an element object - recursively render it
+       render(child, domElement);
+     }
+   });
+   ```
+
+4. **Append to container:**
+   ```javascript
+   container.appendChild(domElement);
+   ```
+
+### Understanding Recursion
+
+When you encounter a nested element object (not a string), you need to call `render` again with that child element. This is recursion - the function calls itself!
+
+Example:
 ```javascript
-if (key === 'className') {
-  domElement.setAttribute('class', element.props[key]);
-}
+const inner = createElement('span', {}, 'Nested');
+const outer = createElement('div', {}, inner);
 ```
 
-**Why?** In JSX/React, we use `className` instead of `class` because `class` is a reserved keyword in JavaScript.
+When rendering `outer`:
+- Create `<div>`
+- Process children: find `inner` (an object, not a string)
+- Recursively call `render(inner, div)` → creates `<span>Nested</span>`
+- Append the span to the div
+- Append the div to the container
 
-### Handling Event Handlers
-
-Event handlers are props that start with `'on'` and have a function as their value:
-
-```javascript
-if (key.startsWith('on') && typeof element.props[key] === 'function') {
-  // Extract event name: 'onClick' -> 'click'
-  const eventName = key.slice(2).toLowerCase();
-  // Attach event listener
-  domElement.addEventListener(eventName, element.props[key]);
-}
-```
-
-**Breaking it down:**
-- `key.startsWith('on')` - checks if prop name starts with 'on'
-- `typeof element.props[key] === 'function'` - ensures it's a function
-- `key.slice(2)` - removes first 2 characters ('on' from 'onClick')
-- `.toLowerCase()` - converts 'Click' to 'click'
-- `addEventListener(eventName, handler)` - attaches the event listener
-
-### Complete Implementation Pattern
-
-You'll need to modify the props handling section in your render function:
+### Complete Example Structure
 
 ```javascript
-Object.keys(element.props).forEach(key => {
-  const value = element.props[key];
+function render(element, container) {
+  // 1. Create DOM element
+  const domElement = document.createElement(element.type);
   
-  if (key === 'className') {
-    // Special case: className → class attribute
-    domElement.setAttribute('class', value);
-  } else if (key.startsWith('on') && typeof value === 'function') {
-    // Special case: event handlers
-    const eventName = key.slice(2).toLowerCase();
-    domElement.addEventListener(eventName, value);
-  } else {
-    // Regular attributes
-    domElement.setAttribute(key, value);
-  }
-});
+  // 2. Set attributes
+  Object.keys(element.props).forEach(key => {
+    domElement.setAttribute(key, element.props[key]);
+  });
+  
+  // 3. Handle children
+  element.children.forEach(child => {
+    if (typeof child === 'string') {
+      domElement.appendChild(document.createTextNode(child));
+    } else {
+      render(child, domElement); // Recursive call!
+    }
+  });
+  
+  // 4. Append to container
+  container.appendChild(domElement);
+}
 ```
-
-### Examples
-
-**Example 1: className**
-```javascript
-createElement('div', { className: 'container' })
-// Should set: domElement.setAttribute('class', 'container')
-// Result: <div class="container"></div>
-```
-
-**Example 2: onClick**
-```javascript
-const handleClick = () => console.log('Clicked!');
-createElement('button', { onClick: handleClick }, 'Click me')
-// Should call: domElement.addEventListener('click', handleClick)
-// Result: <button>Click me</button> with click handler attached
-```
-
-**Example 3: Multiple special props**
-```javascript
-const handleSubmit = () => console.log('Submitted!');
-createElement('form', { 
-  className: 'my-form', 
-  onSubmit: handleSubmit,
-  id: 'form-1'
-})
-// Should:
-// - setAttribute('class', 'my-form')
-// - addEventListener('submit', handleSubmit)
-// - setAttribute('id', 'form-1')
-```
-
-### Common Event Name Conversions
-
-- `onClick` → `'click'`
-- `onSubmit` → `'submit'`
-- `onChange` → `'change'`
-- `onFocus` → `'focus'`
-- `onBlur` → `'blur'`
-
-The pattern is always: remove `'on'` prefix and lowercase the rest.
 
 ### Common Mistakes to Avoid
 
-- Forgetting to check `typeof value === 'function'` for event handlers
-- Not lowercasing the event name (should be 'click', not 'Click')
-- Using `setAttribute` for event handlers instead of `addEventListener`
-- Not handling regular props in the else case
-- Checking for event handlers before className (order matters - check className first!)
+- Forgetting to check if child is a string before creating text node
+- Not recursively calling `render` for nested elements
+- Appending to container before setting up the element completely
+- Using `textContent` instead of `createTextNode` (both work, but `createTextNode` is more explicit)
 

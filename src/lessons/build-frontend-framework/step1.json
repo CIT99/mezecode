@@ -1,6 +1,5 @@
 {
   "number": 1,
-  "title": "Create a Component Function",
-  "description": "In this step, you'll create a simple component function called `createElement`. This function is the foundation of our framework - it creates a JavaScript object that represents a DOM element structure.\n\n**What you need to do:**\n- Create a function called `createElement`\n- It should accept: `tag` (string), `props` (object, optional), and `...children` (rest parameter for multiple children)\n- It should return an object with three properties: `type`, `props`, and `children`\n\n**Example usage:**\n```javascript\nconst element = createElement('div', { id: 'my-div' }, 'Hello', 'World');\n// Returns: { type: 'div', props: { id: 'my-div' }, children: ['Hello', 'World'] }\n```\n\n**Tips:**\n- Use default parameters for props: `props = {}`\n- Use rest parameters for children: `...children`\n- Return a plain object with the three required properties"
+  "title": "Change the Text",
+  "description": "Welcome! In this first step, you'll see a working example of our framework. The code is already complete - you just need to change the text from \"Hello World\" to \"Hello CIT84\".\n\n**What you need to do:**\n- Look at the code below - it's already working!\n- Find where it says \"Hello World\"\n- Change it to \"Hello CIT84\"\n\n**Why this step?**\nThis is a quick win to get you started! You'll see the framework in action and understand how it works before we start building it from scratch.\n\n**Example:**\nChange `'Hello World'` to `'Hello CIT84'`"
 }
-

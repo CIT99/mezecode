@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLessonStore } from '../store/lessonStore'
-import { createPreviewHTML, createBlobURL } from '../services/previewRenderer'
+import { createPreviewHTML as defaultCreatePreviewHTML, createBlobURL } from '../services/previewRenderer'
 
 export default function LivePreview() {
-  const { code } = useLessonStore()
+  const { code, stepData } = useLessonStore()
   const iframeRef = useRef(null)
   const [error, setError] = useState(null)
   const blobURLRef = useRef(null)
@@ -18,6 +18,8 @@ export default function LivePreview() {
 
     try {
       setError(null)
+      // Use step-specific preview renderer if available, otherwise use default
+      const createPreviewHTML = stepData?.previewRenderer || defaultCreatePreviewHTML
       const html = createPreviewHTML(code || '')
       const blobURL = createBlobURL(html)
       blobURLRef.current = blobURL
@@ -32,7 +34,7 @@ export default function LivePreview() {
         URL.revokeObjectURL(blobURLRef.current)
       }
     }
-  }, [code])
+  }, [code, stepData])
 
   return (
     <div className="h-full w-full flex flex-col bg-white">

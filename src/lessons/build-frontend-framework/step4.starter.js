@@ -1,5 +1,5 @@
-// Step 4: Add Event Listeners
-// ============================
+// Step 3: Add className Support
+// ==============================
 // You should have createElement and render from previous steps
 function createElement(tag, props = {}, ...children) {
   return {
@@ -9,24 +9,20 @@ function createElement(tag, props = {}, ...children) {
   };
 }
 
-// Current render function (needs enhancement for event handlers)
+// Current render function (needs enhancement for className)
 function render(element, container) {
   const domElement = document.createElement(element.type);
   
-  // TODO: Enhance this section to handle event handlers
-  // Currently, this handles className, but we need special handling for:
-  // Event handlers (onClick, onSubmit, etc.) → should use addEventListener
+  // TODO: Enhance this section to handle className prop
+  // Currently, this sets all props as attributes, but we need special handling for:
+  // className → should map to 'class' attribute
   
   Object.keys(element.props).forEach(key => {
-    if (key === 'className') {
-      domElement.setAttribute('class', element.props[key]);
-    } else {
-      // TODO: Add special handling here for event handlers
-      // Check if key.startsWith('on') and value is a function → use addEventListener
-      // Otherwise → use setAttribute(key, value) as before
-      
-      domElement.setAttribute(key, element.props[key]);
-    }
+    // TODO: Add special handling here
+    // Check if key === 'className' → use setAttribute('class', value)
+    // Otherwise → use setAttribute(key, value) as before
+    
+    domElement.setAttribute(key, element.props[key]);
   });
   
   element.children.forEach(child => {
@@ -40,36 +36,30 @@ function render(element, container) {
   container.appendChild(domElement);
 }
 
-// Your task: Enhance the render function above to handle event handlers
+// Your task: Enhance the render function above to handle className prop
 //
-// 1. Event handlers (props starting with 'on'):
-//    - Check if key.startsWith('on') AND typeof value === 'function'
-//    - Extract event name: remove 'on' prefix and lowercase (onClick → 'click')
-//    - Use addEventListener(eventName, handler) instead of setAttribute
-//    - Example: { onClick: handleClick } → addEventListener('click', handleClick)
+// 1. className prop:
+//    - When you see props.className, use setAttribute('class', value) instead
+//    - Example: { className: 'btn' } → setAttribute('class', 'btn')
 //
-// 2. className and regular props:
-//    - Keep working as before
+// 2. Regular props:
+//    - Keep working as before for other attributes
 //
 // Example usage:
-//   const handleClick = () => console.log('Clicked!');
 //   const element = createElement('button', { 
 //     className: 'btn', 
-//     onClick: handleClick,
 //     id: 'my-button'
 //   }, 'Click me');
 //   render(element, container);
-//   Result: <button class="btn" id="my-button">Click me</button> with click handler
+//   Result: <button class="btn" id="my-button">Click me</button>
 //
 // Hints:
-//   - Use if/else if/else to check prop types
-//   - For event name: key.slice(2).toLowerCase() converts 'onClick' to 'click'
-//   - Make sure to check typeof value === 'function' before adding event listener
-//   - Don't forget to handle className and regular props in their respective cases
+//   - Use if/else to check if key === 'className'
+//   - For className: use setAttribute('class', value)
+//   - For other props: use setAttribute(key, value)
 
 // Your enhanced render function (modify the one above):
 
 // Don't forget to export both functions!
 exports.createElement = createElement;
 exports.render = render;
-

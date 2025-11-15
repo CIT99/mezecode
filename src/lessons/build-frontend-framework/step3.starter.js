@@ -1,6 +1,6 @@
-// Step 3: Add className Support
-// ==============================
-// You should have createElement and render from previous steps
+// Step 2: Build a Render Function
+// =================================
+// You should already have createElement from step 1
 function createElement(tag, props = {}, ...children) {
   return {
     type: tag,
@@ -9,57 +9,63 @@ function createElement(tag, props = {}, ...children) {
   };
 }
 
-// Current render function (needs enhancement for className)
-function render(element, container) {
-  const domElement = document.createElement(element.type);
-  
-  // TODO: Enhance this section to handle className prop
-  // Currently, this sets all props as attributes, but we need special handling for:
-  // className → should map to 'class' attribute
-  
-  Object.keys(element.props).forEach(key => {
-    // TODO: Add special handling here
-    // Check if key === 'className' → use setAttribute('class', value)
-    // Otherwise → use setAttribute(key, value) as before
-    
-    domElement.setAttribute(key, element.props[key]);
-  });
-  
-  element.children.forEach(child => {
-    if (typeof child === 'string') {
-      domElement.appendChild(document.createTextNode(child));
-    } else {
-      render(child, domElement);
-    }
-  });
-  
-  container.appendChild(domElement);
-}
-
-// Your task: Enhance the render function above to handle className prop
+// Now create a render function that converts element objects into real DOM elements
 //
-// 1. className prop:
-//    - When you see props.className, use setAttribute('class', value) instead
-//    - Example: { className: 'btn' } → setAttribute('class', 'btn')
+// Function signature:
+//   render(element, container)
 //
-// 2. Regular props:
-//    - Keep working as before for other attributes
+// Parameters:
+//   - element: object (from createElement) - the virtual DOM element to render
+//   - container: DOM element - where to append the rendered element
 //
-// Example usage:
-//   const element = createElement('button', { 
-//     className: 'btn', 
-//     id: 'my-button'
-//   }, 'Click me');
+// What it should do:
+//   1. Create a real DOM element using document.createElement(element.type)
+//   2. Set all props as attributes on the DOM element (use setAttribute)
+//   3. Handle children:
+//      - If child is a string: create a text node and append it
+//      - If child is an object: recursively call render(child, domElement)
+//   4. Append the created DOM element to the container
+//
+// Example:
+//   const element = createElement('div', { id: 'test' }, 'Hello');
+//   const container = document.getElementById('app');
 //   render(element, container);
-//   Result: <button class="btn" id="my-button">Click me</button>
+//   Result: <div id="test">Hello</div> is added to the container
 //
 // Hints:
-//   - Use if/else to check if key === 'className'
-//   - For className: use setAttribute('class', value)
-//   - For other props: use setAttribute(key, value)
+//   - Use document.createElement(tagName) to create DOM elements
+//   - Use element.setAttribute(key, value) to set attributes
+//   - Use document.createTextNode(text) for text content
+//   - Use element.appendChild(child) to add children
+//   - Check typeof child === 'string' to distinguish text from element objects
+//   - Remember to recursively call render() for nested elements!
 
-// Your enhanced render function (modify the one above):
+function render(element, container) {
+  // TODO: Step 1 - Create the DOM element
+  // const domElement = document.createElement(???);
+  
+  // TODO: Step 2 - Set props as attributes
+  // Object.keys(element.props).forEach(key => {
+  //   domElement.setAttribute(???);
+  // });
+  
+  // TODO: Step 3 - Handle children
+  // element.children.forEach(child => {
+  //   if (typeof child === 'string') {
+  //     // Create text node and append
+  //   } else {
+  //     // Recursively render nested elements
+  //   }
+  // });
+  
+  // TODO: Step 4 - Append to container
+  // container.appendChild(???);
+  
+  // Your code here:
+  
+}
 
 // Don't forget to export both functions!
 exports.createElement = createElement;
 exports.render = render;
+

@@ -1,71 +1,38 @@
-// Step 2: Build a Render Function
-// =================================
-// You should already have createElement from step 1
-function createElement(tag, props = {}, ...children) {
-  return {
-    type: tag,
-    props: props,
-    children: children
-  };
-}
-
-// Now create a render function that converts element objects into real DOM elements
+// Step 2: Create a Component Function
+// =====================================
+// Your task: Create a function called `createElement` that builds a virtual DOM element object.
 //
 // Function signature:
-//   render(element, container)
+//   createElement(tag, props = {}, ...children)
 //
 // Parameters:
-//   - element: object (from createElement) - the virtual DOM element to render
-//   - container: DOM element - where to append the rendered element
+//   - tag: string (e.g., 'div', 'span', 'button')
+//   - props: object (optional, defaults to {}) - properties/attributes for the element
+//   - ...children: rest parameter - any number of child elements (strings or element objects)
 //
-// What it should do:
-//   1. Create a real DOM element using document.createElement(element.type)
-//   2. Set all props as attributes on the DOM element (use setAttribute)
-//   3. Handle children:
-//      - If child is a string: create a text node and append it
-//      - If child is an object: recursively call render(child, domElement)
-//   4. Append the created DOM element to the container
+// Returns:
+//   An object with three properties:
+//   {
+//     type: tag,        // The tag name
+//     props: props,     // The props object
+//     children: children // Array of children
+//   }
 //
 // Example:
-//   const element = createElement('div', { id: 'test' }, 'Hello');
-//   const container = document.getElementById('app');
-//   render(element, container);
-//   Result: <div id="test">Hello</div> is added to the container
+//   createElement('div', { id: 'my-div' }, 'Hello', 'World')
+//   Returns: { type: 'div', props: { id: 'my-div' }, children: ['Hello', 'World'] }
 //
 // Hints:
-//   - Use document.createElement(tagName) to create DOM elements
-//   - Use element.setAttribute(key, value) to set attributes
-//   - Use document.createTextNode(text) for text content
-//   - Use element.appendChild(child) to add children
-//   - Check typeof child === 'string' to distinguish text from element objects
-//   - Remember to recursively call render() for nested elements!
+//   - Use default parameter syntax: props = {}
+//   - Use rest parameter syntax: ...children
+//   - Return a plain object literal
 
-function render(element, container) {
-  // TODO: Step 1 - Create the DOM element
-  // const domElement = document.createElement(???);
-  
-  // TODO: Step 2 - Set props as attributes
-  // Object.keys(element.props).forEach(key => {
-  //   domElement.setAttribute(???);
-  // });
-  
-  // TODO: Step 3 - Handle children
-  // element.children.forEach(child => {
-  //   if (typeof child === 'string') {
-  //     // Create text node and append
-  //   } else {
-  //     // Recursively render nested elements
-  //   }
-  // });
-  
-  // TODO: Step 4 - Append to container
-  // container.appendChild(???);
-  
+function createElement(tag, props = {}, ...children) {
+  // TODO: Return an object with type, props, and children properties
   // Your code here:
   
 }
 
-// Don't forget to export both functions!
+// Don't forget to export your function!
 exports.createElement = createElement;
-exports.render = render;
 

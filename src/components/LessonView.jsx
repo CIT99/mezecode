@@ -67,7 +67,7 @@ export default function LessonView() {
       markModalAsShown(lessonData.id, modalKey)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lessonData?.id, currentStep, testResults?.passed, JSON.stringify(completedSteps[lessonData?.id] || [])])
+  }, [lessonData?.id, currentStep, testResults?.passed, completedSteps[lessonData?.id]?.length, completedSteps[lessonData?.id]?.[0]])
 
   // Check if we should show completion advertisement modal
   useEffect(() => {
@@ -84,7 +84,7 @@ export default function LessonView() {
       markModalAsShown(lessonData.id, modalKey)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lessonData?.id, lessonData?.steps?.length, JSON.stringify(completedSteps[lessonData?.id] || [])])
+  }, [lessonData?.id, lessonData?.steps?.length, completedSteps[lessonData?.id]?.length])
 
   // Handle "Continue with the challenge" button
   const handleContinueChallenge = () => {

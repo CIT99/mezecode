@@ -1,38 +1,30 @@
-// Step 1: Create a Component Function
-// =====================================
-// Your task: Create a function called `createElement` that builds a virtual DOM element object.
+// ============================================================================
+// Welcome to "Build a Frontend Framework"!
+// ============================================================================
 //
-// Function signature:
-//   createElement(tag, props = {}, ...children)
+// 🎉 Congratulations on starting this lesson! You're about to learn how to
+// build a simple frontend framework from scratch - similar to React, but
+// simplified so you can understand the core concepts.
 //
-// Parameters:
-//   - tag: string (e.g., 'div', 'span', 'button')
-//   - props: object (optional, defaults to {}) - properties/attributes for the element
-//   - ...children: rest parameter - any number of child elements (strings or element objects)
+// 📚 What You'll Learn:
+//   - How to create virtual DOM elements (like React's JSX)
+//   - How to render components to the real DOM
+//   - How to handle props, events, and styling
+//   - The fundamentals of how modern frameworks work under the hood
 //
-// Returns:
-//   An object with three properties:
-//   {
-//     type: tag,        // The tag name
-//     props: props,     // The props object
-//     children: children // Array of children
-//   }
+// 🚀 This First Step:
+//   This is a quick introduction step! The framework code is already complete
+//   and working. You'll see it in action before we start building it from scratch.
 //
-// Example:
-//   createElement('div', { id: 'my-div' }, 'Hello', 'World')
-//   Returns: { type: 'div', props: { id: 'my-div' }, children: ['Hello', 'World'] }
+// ✏️ Your Task:
+//   Look at the code below. You'll see it creates an element with the text
+//   "Hello World". Your job is simple: change "Hello World" to "Hello CIT84"
 //
-// Hints:
-//   - Use default parameter syntax: props = {}
-//   - Use rest parameter syntax: ...children
-//   - Return a plain object literal
+// 💡 What's Happening:
+//   - `createElement()` creates a virtual DOM element (an object representation)
+//   - `render()` converts that object into a real DOM element
+//   - The result appears in the preview panel on the right
+//
+// 🎯 Ready? Let's get started!
 
-function createElement(tag, props = {}, ...children) {
-  // TODO: Return an object with type, props, and children properties
-  // Your code here:
-  
-}
-
-// Don't forget to export your function!
-exports.createElement = createElement;
-
+const element = exports.createElement('div', {}, 'Hello World');

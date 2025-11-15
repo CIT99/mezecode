@@ -5,24 +5,33 @@
   "steps": [
     {
       "number": 1,
+      "title": "Change the Text",
+      "description": "Welcome! In this first step, you'll see a working example of our framework. The code is already complete - you just need to change the text from \"Hello CIT84\" to something else."
+    },
+    {
+      "number": 2,
       "title": "Create a Component Function",
       "description": "Start by creating a simple component function that returns JSX-like objects."
     },
     {
-      "number": 2,
+      "number": 3,
       "title": "Build a Render Function",
       "description": "Create a render function that can convert your component objects into DOM elements."
     },
     {
-      "number": 3,
+      "number": 4,
       "title": "Add className Support",
       "description": "Enhance your render function to handle the className prop, mapping it to the HTML class attribute."
     },
     {
-      "number": 4,
+      "number": 5,
       "title": "Add Event Listeners",
       "description": "Extend your render function to handle event handler props that start with 'on'."
+    },
+    {
+      "number": 6,
+      "title": "Build a Complete Page",
+      "description": "Congratulations! You've built a working framework. Now let's use it to create a complete page with multiple elements - h1, p, a tags, and more!"
     }
   ]
 }
-

@@ -12,6 +12,11 @@ const lessonModules = import.meta.glob('/src/lessons/**/*.{json,js,md}', {
   query: '?raw'
 })
 
+// Preview renderer files need to be loaded as modules (not raw) to access exports
+const previewRendererModules = import.meta.glob('/src/lessons/**/*.previewRenderer.js', {
+  eager: false
+})
+
 // Cache for loaded modules
 const moduleCache = new Map()
 
@@ -65,6 +70,39 @@ const loadModule = async (path) => {
     return textContent
   } catch (error) {
     console.warn(`Failed to load module: ${path}`, error)
+    return null
+  }
+}
+
+const loadPreviewRenderer = async (path) => {
+  // Normalize path for comparison
+  const normalizedPath = path.replace(/\\/g, '/')
+  
+  // Try to find matching preview renderer module
+  const moduleKey = Object.keys(previewRendererModules).find(key => {
+    const normalizedKey = key.replace(/\\/g, '/')
+    return normalizedKey === normalizedPath || normalizedKey.endsWith(normalizedPath)
+  })
+
+  if (!moduleKey) {
+    // Preview renderer is optional, so return null if not found
+    return null
+  }
+
+  try {
+    const moduleLoader = previewRendererModules[moduleKey]
+    if (typeof moduleLoader !== 'function') {
+      return null
+    }
+    
+    const module = await moduleLoader()
+    // Preview renderer should export createPreviewHTML function
+    if (module && module.createPreviewHTML && typeof module.createPreviewHTML === 'function') {
+      return module.createPreviewHTML
+    }
+    return null
+  } catch (error) {
+    console.warn(`Failed to load preview renderer: ${path}`, error)
     return null
   }
 }
@@ -141,6 +179,13 @@ export const loadStepData = async (lessonId, stepNumber) => {
     const testCode = await loadModule(testPath)
     if (testCode) {
       stepData.testCode = testCode
+    }
+    
+    // Load preview renderer (as a module, not raw)
+    const previewRendererPath = getModulePath(lessonId, `step${stepNumber}.previewRenderer.js`)
+    const previewRenderer = await loadPreviewRenderer(previewRendererPath)
+    if (previewRenderer) {
+      stepData.previewRenderer = previewRenderer
     }
     
     return stepData

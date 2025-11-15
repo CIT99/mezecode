@@ -1,79 +1,32 @@
-## Hint: Creating the createElement Function
+## Hint: Change the Text
 
-### Understanding the Requirements
+### What You Need to Do
 
-You need to create a function that builds a virtual representation of a DOM element. Think of it as creating a blueprint before building the actual element.
+This is a simple first step! The framework code is already complete and working. You just need to find the text "Hello World" and change it to "Hello CIT84".
 
-### Key Concepts
+### Where to Look
 
-1. **Function Parameters:**
-   - `tag`: A string like `'div'`, `'span'`, `'button'`
-   - `props`: An object with properties (optional, should default to `{}`)
-   - `...children`: Rest parameter that collects all remaining arguments into an array
-
-2. **Rest Parameters (`...children`):**
-   ```javascript
-   function example(...args) {
-     console.log(args); // args is an array
-   }
-   example(1, 2, 3); // args = [1, 2, 3]
-   ```
-
-3. **Default Parameters:**
-   ```javascript
-   function example(param = {}) {
-     // param defaults to {} if not provided
-   }
-   ```
-
-4. **Object Literal Syntax:**
-   ```javascript
-   return {
-     type: tag,
-     props: props,
-     children: children
-   };
-   ```
-
-### Step-by-Step Approach
-
-1. Start with the function declaration:
-   ```javascript
-   function createElement(tag, props = {}, ...children) {
-   ```
-
-2. Return an object with the three required properties:
-   ```javascript
-   return {
-     type: tag,        // The tag name passed in
-     props: props,     // The props object (or empty object)
-     children: children // Array of all children (rest parameter)
-   };
-   ```
-
-### Example Walkthrough
-
-When you call:
+Look for this line in the code:
 ```javascript
-createElement('div', { id: 'test' }, 'Hello', 'World')
+const element = exports.createElement('div', {}, 'Hello World');
 ```
 
-- `tag` = `'div'`
-- `props` = `{ id: 'test' }`
-- `children` = `['Hello', 'World']` (rest parameter collects these)
+### What to Change
 
-The function should return:
+Change `'Hello World'` to `'Hello CIT84'`:
 ```javascript
-{
-  type: 'div',
-  props: { id: 'test' },
-  children: ['Hello', 'World']
-}
+const element = exports.createElement('div', {}, 'Hello CIT84');
 ```
 
-### Common Mistakes to Avoid
+### Why This Step?
 
-- Forgetting to use rest parameter syntax (`...children` instead of `children`)
-- Not providing a default value for `props`
-- Returning the wrong structure (make sure it matches exactly: `type`, `props`, `children`)
+This step helps you:
+1. See the framework working right away
+2. Understand how `createElement` and `render` work together
+3. Get a quick win before we start building from scratch
 
+### Tips
+
+- Change "Hello World" to "Hello CIT84"
+- The text will appear in the preview panel
+- Make sure to keep the quotes around your text

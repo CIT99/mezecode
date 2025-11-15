@@ -1,10 +1,1 @@
-function createElement(tag, props = {}, ...children) {
-  return {
-    type: tag,
-    props: props,
-    children: children
-  };
-}
-
-exports.createElement = createElement;
-
+const element = exports.createElement('div', {}, 'Hello CIT84');

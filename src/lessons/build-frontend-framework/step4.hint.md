@@ -1,35 +1,56 @@
-## Hint: Adding Event Handler Support
+## Hint: Enhancing Render with Special Props
 
-### Understanding Event Handlers
+### Understanding Special Props
 
-Event handlers are special props that start with `'on'` followed by an event name (like `onClick`, `onSubmit`, `onChange`). Unlike regular attributes, these need to be attached as event listeners, not set as HTML attributes.
+Some props need special handling because they don't map directly to HTML attributes:
+- `className` → needs to become the `class` attribute (since `class` is a reserved word in JavaScript)
+- Event handlers (`onClick`, `onSubmit`, etc.) → need to be attached as event listeners, not attributes
 
-### Key Concept: Detecting Event Handlers
+### Handling className
 
-An event handler prop has two characteristics:
-1. The key starts with `'on'` (e.g., `onClick`, `onSubmit`)
-2. The value is a function
+The `className` prop should map to the HTML `class` attribute:
 
 ```javascript
-// Event handler example
-{ onClick: () => console.log('clicked') }
-//   ^^^^^ starts with 'on'
-//         ^^^^^^^^^^^^^^^^^^^^ value is a function
+if (key === 'className') {
+  domElement.setAttribute('class', element.props[key]);
+}
 ```
 
-### Implementation Pattern
+**Why?** In JSX/React, we use `className` instead of `class` because `class` is a reserved keyword in JavaScript.
 
-You need to add a check in your props handling loop:
+### Handling Event Handlers
+
+Event handlers are props that start with `'on'` and have a function as their value:
+
+```javascript
+if (key.startsWith('on') && typeof element.props[key] === 'function') {
+  // Extract event name: 'onClick' -> 'click'
+  const eventName = key.slice(2).toLowerCase();
+  // Attach event listener
+  domElement.addEventListener(eventName, element.props[key]);
+}
+```
+
+**Breaking it down:**
+- `key.startsWith('on')` - checks if prop name starts with 'on'
+- `typeof element.props[key] === 'function'` - ensures it's a function
+- `key.slice(2)` - removes first 2 characters ('on' from 'onClick')
+- `.toLowerCase()` - converts 'Click' to 'click'
+- `addEventListener(eventName, handler)` - attaches the event listener
+
+### Complete Implementation Pattern
+
+You'll need to modify the props handling section in your render function:
 
 ```javascript
 Object.keys(element.props).forEach(key => {
   const value = element.props[key];
   
   if (key === 'className') {
-    // Handle className (from step 3)
+    // Special case: className → class attribute
     domElement.setAttribute('class', value);
   } else if (key.startsWith('on') && typeof value === 'function') {
-    // NEW: Handle event handlers
+    // Special case: event handlers
     const eventName = key.slice(2).toLowerCase();
     domElement.addEventListener(eventName, value);
   } else {
@@ -39,63 +60,35 @@ Object.keys(element.props).forEach(key => {
 });
 ```
 
-### Breaking Down the Event Handler Code
-
-1. **Check if it's an event handler:**
-   ```javascript
-   key.startsWith('on') && typeof value === 'function'
-   ```
-   - `key.startsWith('on')` - checks if prop name starts with 'on'
-   - `typeof value === 'function'` - ensures the value is actually a function
-
-2. **Extract the event name:**
-   ```javascript
-   const eventName = key.slice(2).toLowerCase();
-   ```
-   - `key.slice(2)` - removes first 2 characters ('on' from 'onClick')
-   - `.toLowerCase()` - converts 'Click' to 'click' (DOM events are lowercase)
-
-3. **Attach the event listener:**
-   ```javascript
-   domElement.addEventListener(eventName, value);
-   ```
-   - `addEventListener` - the standard DOM method for attaching event handlers
-   - `eventName` - the event type (e.g., 'click', 'submit')
-   - `value` - the function to call when the event fires
-
 ### Examples
 
-**Example 1: onClick**
+**Example 1: className**
 ```javascript
-const handleClick = () => console.log('Button clicked!');
+createElement('div', { className: 'container' })
+// Should set: domElement.setAttribute('class', 'container')
+// Result: <div class="container"></div>
+```
+
+**Example 2: onClick**
+```javascript
+const handleClick = () => console.log('Clicked!');
 createElement('button', { onClick: handleClick }, 'Click me')
-// When rendered:
-// - Checks: 'onClick'.startsWith('on') → true
-// - Checks: typeof handleClick === 'function' → true
-// - Extracts: 'onClick'.slice(2).toLowerCase() → 'click'
-// - Calls: domElement.addEventListener('click', handleClick)
+// Should call: domElement.addEventListener('click', handleClick)
+// Result: <button>Click me</button> with click handler attached
 ```
 
-**Example 2: onSubmit**
+**Example 3: Multiple special props**
 ```javascript
-const handleSubmit = (e) => { e.preventDefault(); console.log('Form submitted'); };
-createElement('form', { onSubmit: handleSubmit })
-// Extracts: 'onSubmit'.slice(2).toLowerCase() → 'submit'
-// Calls: domElement.addEventListener('submit', handleSubmit)
-```
-
-**Example 3: Multiple Props Together**
-```javascript
-const handleClick = () => console.log('Clicked');
-createElement('button', { 
-  className: 'btn-primary',
-  id: 'my-button',
-  onClick: handleClick
-}, 'Click me')
-// Handles:
-// - className → setAttribute('class', 'btn-primary')
-// - id → setAttribute('id', 'my-button')
-// - onClick → addEventListener('click', handleClick)
+const handleSubmit = () => console.log('Submitted!');
+createElement('form', { 
+  className: 'my-form', 
+  onSubmit: handleSubmit,
+  id: 'form-1'
+})
+// Should:
+// - setAttribute('class', 'my-form')
+// - addEventListener('submit', handleSubmit)
+// - setAttribute('id', 'form-1')
 ```
 
 ### Common Event Name Conversions
@@ -105,52 +98,14 @@ createElement('button', {
 - `onChange` → `'change'`
 - `onFocus` → `'focus'`
 - `onBlur` → `'blur'`
-- `onMouseEnter` → `'mouseenter'`
-- `onMouseLeave` → `'mouseleave'`
 
-The pattern is always: remove the `'on'` prefix and lowercase the rest.
-
-### Why Not Use setAttribute?
-
-You might wonder why we can't just do:
-```javascript
-domElement.setAttribute('onclick', handler) // ❌ This won't work!
-```
-
-The reason is that `setAttribute` sets a string attribute, but event handlers need to be actual JavaScript functions. The `addEventListener` method properly attaches the function so it can be called when the event occurs.
-
-### Order Matters!
-
-Make sure to check for event handlers **after** checking for `className`, but **before** the else case for regular attributes:
-
-```javascript
-if (key === 'className') {
-  // Check this first
-} else if (key.startsWith('on') && typeof value === 'function') {
-  // Check this second
-} else {
-  // Regular attributes last
-}
-```
+The pattern is always: remove `'on'` prefix and lowercase the rest.
 
 ### Common Mistakes to Avoid
 
-- Forgetting to check `typeof value === 'function'` (not all props starting with 'on' are event handlers)
+- Forgetting to check `typeof value === 'function'` for event handlers
 - Not lowercasing the event name (should be 'click', not 'Click')
-- Using `setAttribute` instead of `addEventListener` for event handlers
-- Checking for event handlers before className (order matters!)
-- Forgetting to handle regular props in the else case
-
-### Testing Your Implementation
-
-After implementing, test with:
-```javascript
-let clicked = false;
-const handleClick = () => { clicked = true; };
-const element = createElement('button', { onClick: handleClick }, 'Test');
-const container = document.createElement('div');
-render(element, container);
-container.querySelector('button').click();
-console.log(clicked); // Should be true
-```
+- Using `setAttribute` for event handlers instead of `addEventListener`
+- Not handling regular props in the else case
+- Checking for event handlers before className (order matters - check className first!)
 
