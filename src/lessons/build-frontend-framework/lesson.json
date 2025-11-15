@@ -1,7 +1,7 @@
 {
   "id": "build-frontend-framework",
   "title": "Build a Frontend Framework",
-  "description": "Learn to build a simple frontend framework from scratch. You'll create a basic component system, rendering engine, and state management.",
+  "description": "Learn to build a simple frontend framework from scratch. You'll create a basic 🧩 component system and ⚙️ rendering engine.",
   "steps": [
     {
       "number": 1,
@@ -15,8 +15,13 @@
     },
     {
       "number": 3,
-      "title": "Add Props Support",
-      "description": "Extend your component system to accept and use props."
+      "title": "Add className Support",
+      "description": "Enhance your render function to handle the className prop, mapping it to the HTML class attribute."
+    },
+    {
+      "number": 4,
+      "title": "Add Event Listeners",
+      "description": "Extend your render function to handle event handler props that start with 'on'."
     }
   ]
 }

@@ -12,12 +12,7 @@ function render(element, container) {
   
   // Set props as attributes
   Object.keys(element.props).forEach(key => {
-    if (key === 'className') {
-      // className maps to class attribute
-      domElement.setAttribute('class', element.props[key]);
-    } else {
-      domElement.setAttribute(key, element.props[key]);
-    }
+    domElement.setAttribute(key, element.props[key]);
   });
   
   // Render children

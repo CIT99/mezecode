@@ -32,11 +32,11 @@ test('render sets text content', () => {
 test('render handles nested elements', () => {
   const container = document.createElement('div');
   const inner = userCode.createElement('span', {}, 'Nested');
-  const outer = userCode.createElement('div', { className: 'outer' }, inner);
+  const outer = userCode.createElement('div', { id: 'outer' }, inner);
   userCode.render(outer, container);
   
   const rendered = container.firstChild;
-  expect(rendered.className).toBe('outer');
+  expect(rendered.id).toBe('outer');
   expect(rendered.firstChild.tagName.toLowerCase()).toBe('span');
   expect(rendered.firstChild.textContent).toBe('Nested');
 });

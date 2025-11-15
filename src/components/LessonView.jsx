@@ -11,6 +11,8 @@ import LessonHeader from './LessonHeader'
 import LessonNavigation from './LessonNavigation'
 import TestFeedback from './TestFeedback'
 import StepDescription from './StepDescription'
+// Advertisement modal integration - easily removable
+import AdvertisementModal from './AdvertisementModal'
 
 export default function LessonView() {
   const {
@@ -30,6 +32,26 @@ export default function LessonView() {
   const [showHint, setShowHint] = useState(false)
   const [activeTab, setActiveTab] = useState('instructions') // 'instructions' or 'code'
   const [showLessonHeader, setShowLessonHeader] = useState(true)
+  
+  // Advertisement modal state - easily removable
+  const [showStep1Ad, setShowStep1Ad] = useState(false)
+  const [showCompletionAd, setShowCompletionAd] = useState(false)
+  
+  // Helper to check if modal has been shown
+  const hasModalBeenShown = (modalKey) => {
+    const stored = sessionStorage.getItem('advertisementModalsShown')
+    if (!stored) return false
+    const shownModals = JSON.parse(stored)
+    return shownModals[modalKey] === true
+  }
+  
+  // Helper to mark modal as shown
+  const markModalAsShown = (modalKey) => {
+    const stored = sessionStorage.getItem('advertisementModalsShown')
+    const shownModals = stored ? JSON.parse(stored) : {}
+    shownModals[modalKey] = true
+    sessionStorage.setItem('advertisementModalsShown', JSON.stringify(shownModals))
+  }
 
   // Check if all steps are completed
   const isComplete = lessonData && lessonData.steps
@@ -39,12 +61,76 @@ export default function LessonView() {
       })
     : false
 
+  // Advertisement modal logic - easily removable
+  // Check if we should show step1 advertisement modal (after the first step completes)
+  // The first step is at index 0 (step number 1)
+  useEffect(() => {
+    if (!lessonData) return
+    
+    // Check if step 0 (first step, step number 1) is completed
+    const completed = completedSteps[lessonData.id] || []
+    const isFirstStepComplete = completed.includes(0)
+    
+    // Also check if we just completed step 0 (for immediate feedback)
+    const justCompletedFirstStep = currentStep === 0 && testResults?.passed
+    
+    if (!isFirstStepComplete && !justCompletedFirstStep) return
+    
+    const modalKey = `${lessonData.id}-step1`
+    if (!hasModalBeenShown(modalKey)) {
+      setShowStep1Ad(true)
+      markModalAsShown(modalKey)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lessonData?.id, currentStep, testResults?.passed, JSON.stringify(completedSteps[lessonData?.id] || [])])
+
+  // Check if we should show completion advertisement modal
+  useEffect(() => {
+    if (!lessonData || !lessonData.steps) return
+    
+    const completed = completedSteps[lessonData.id] || []
+    const allStepsComplete = lessonData.steps.every((_, index) => completed.includes(index))
+    
+    if (!allStepsComplete) return
+    
+    const modalKey = `${lessonData.id}-completion`
+    if (!hasModalBeenShown(modalKey)) {
+      setShowCompletionAd(true)
+      markModalAsShown(modalKey)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lessonData?.id, lessonData?.steps?.length, JSON.stringify(completedSteps[lessonData?.id] || [])])
+
+  // Handle "Continue with the challenge" button
+  const handleContinueChallenge = () => {
+    if (lessonData && lessonData.steps && currentStep < lessonData.steps.length - 1) {
+      const nextStep = currentStep + 1
+      setCurrentStep(nextStep)
+      const stepData = lessonData.steps[nextStep]
+      loadStepCode(stepData.starterCode || '')
+    }
+  }
+
   const handleStartOver = () => {
     if (lessonData) {
       // Reset progress for current lesson only
       resetProgress(lessonData.id)
       // Clear saved code for current lesson
       clearStepCode(lessonData.id)
+      
+      // Clear advertisement modals for this lesson so they show again
+      const stored = sessionStorage.getItem('advertisementModalsShown')
+      if (stored) {
+        const shownModals = JSON.parse(stored)
+        delete shownModals[`${lessonData.id}-step1`]
+        delete shownModals[`${lessonData.id}-completion`]
+        sessionStorage.setItem('advertisementModalsShown', JSON.stringify(shownModals))
+      }
+      
+      // Reset modal state
+      setShowStep1Ad(false)
+      setShowCompletionAd(false)
+      
       // Reset to step 0 and reload starter code
       setCurrentStep(0)
       if (lessonData.steps && lessonData.steps.length > 0) {
@@ -228,6 +314,19 @@ export default function LessonView() {
       <div className="flex-shrink-0">
         <LessonNavigation />
       </div>
+
+      {/* Advertisement modals - easily removable */}
+      <AdvertisementModal
+        type="step1"
+        isOpen={showStep1Ad}
+        onClose={() => setShowStep1Ad(false)}
+        onContinue={handleContinueChallenge}
+      />
+      <AdvertisementModal
+        type="completion"
+        isOpen={showCompletionAd}
+        onClose={() => setShowCompletionAd(false)}
+      />
     </div>
   )
 }

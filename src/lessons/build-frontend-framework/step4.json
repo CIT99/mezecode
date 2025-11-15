@@ -1,0 +1,6 @@
+{
+  "number": 4,
+  "title": "Add Event Listeners",
+  "description": "Enhance your `render` function to handle event handler props that start with 'on' (like `onClick`, `onSubmit`).\n\n**What you need to do:**\n- Handle event handlers: props starting with 'on' (like `onClick`, `onSubmit`) should be attached as event listeners\n- Keep className and regular props working as before\n\n**Special handling needed:**\n- **Event handlers**: When a prop key starts with 'on' and the value is a function:\n  - Extract event name: remove 'on' prefix and lowercase (e.g., 'onClick' → 'click')\n  - Use `addEventListener(eventName, handler)` instead of `setAttribute`\n\n**Example usage:**\n```javascript\nconst handleClick = () => console.log('Clicked!');\nconst element = createElement('button', { \n  className: 'btn', \n  onClick: handleClick \n}, 'Click me');\nrender(element, container);\n// Creates: <button class=\"btn\">Click me</button> with click handler attached\n```\n\n**Tips:**\n- Check if `key.startsWith('on')` and `typeof value === 'function'` for event handlers\n- Use `key.slice(2).toLowerCase()` to convert 'onClick' to 'click'\n- Use `addEventListener(eventName, handler)` to attach the event listener\n- Make sure to handle className and event handlers separately"
+}
+
