@@ -6,6 +6,7 @@ export const useProgressStore = create(
     (set, get) => ({
       completedSteps: {}, // { lessonId: [stepIndex1, stepIndex2, ...] }
       testResults: {}, // { lessonId: { stepIndex: { passed: bool, results: [] } } }
+      shownModals: {}, // { lessonId: { 'step1': true, 'completion': true } }
       
       markStepComplete: (lessonId, stepIndex) => {
         set((state) => {
@@ -61,11 +62,14 @@ export const useProgressStore = create(
           set((state) => {
             const newCompletedSteps = { ...state.completedSteps }
             const newTestResults = { ...state.testResults }
+            const newShownModals = { ...state.shownModals }
             delete newCompletedSteps[lessonId]
             delete newTestResults[lessonId]
+            delete newShownModals[lessonId]
             return {
               completedSteps: newCompletedSteps,
               testResults: newTestResults,
+              shownModals: newShownModals,
             }
           })
         } else {
@@ -73,8 +77,29 @@ export const useProgressStore = create(
           set({
             completedSteps: {},
             testResults: {},
+            shownModals: {},
           })
         }
+      },
+      
+      hasModalBeenShown: (lessonId, modalKey) => {
+        const shownModals = get().shownModals[lessonId] || {}
+        return shownModals[modalKey] === true
+      },
+      
+      markModalAsShown: (lessonId, modalKey) => {
+        set((state) => {
+          const lessonModals = state.shownModals[lessonId] || {}
+          return {
+            shownModals: {
+              ...state.shownModals,
+              [lessonId]: {
+                ...lessonModals,
+                [modalKey]: true,
+              },
+            },
+          }
+        })
       },
     }),
     {

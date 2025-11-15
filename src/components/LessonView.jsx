@@ -26,7 +26,7 @@ export default function LessonView() {
     clearStepCode,
   } = useLessonStore()
 
-  const { resetProgress, completedSteps } = useProgressStore()
+  const { resetProgress, completedSteps, hasModalBeenShown, markModalAsShown } = useProgressStore()
   const { runTests, testResults, isRunning } = useTestRunner()
   const { resetCode } = useCodeExecution()
   const [showHint, setShowHint] = useState(false)
@@ -36,22 +36,6 @@ export default function LessonView() {
   // Advertisement modal state - easily removable
   const [showStep1Ad, setShowStep1Ad] = useState(false)
   const [showCompletionAd, setShowCompletionAd] = useState(false)
-  
-  // Helper to check if modal has been shown
-  const hasModalBeenShown = (modalKey) => {
-    const stored = sessionStorage.getItem('advertisementModalsShown')
-    if (!stored) return false
-    const shownModals = JSON.parse(stored)
-    return shownModals[modalKey] === true
-  }
-  
-  // Helper to mark modal as shown
-  const markModalAsShown = (modalKey) => {
-    const stored = sessionStorage.getItem('advertisementModalsShown')
-    const shownModals = stored ? JSON.parse(stored) : {}
-    shownModals[modalKey] = true
-    sessionStorage.setItem('advertisementModalsShown', JSON.stringify(shownModals))
-  }
 
   // Check if all steps are completed
   const isComplete = lessonData && lessonData.steps
@@ -76,10 +60,10 @@ export default function LessonView() {
     
     if (!isFirstStepComplete && !justCompletedFirstStep) return
     
-    const modalKey = `${lessonData.id}-step1`
-    if (!hasModalBeenShown(modalKey)) {
+    const modalKey = 'step1'
+    if (!hasModalBeenShown(lessonData.id, modalKey)) {
       setShowStep1Ad(true)
-      markModalAsShown(modalKey)
+      markModalAsShown(lessonData.id, modalKey)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lessonData?.id, currentStep, testResults?.passed, JSON.stringify(completedSteps[lessonData?.id] || [])])
@@ -93,10 +77,10 @@ export default function LessonView() {
     
     if (!allStepsComplete) return
     
-    const modalKey = `${lessonData.id}-completion`
-    if (!hasModalBeenShown(modalKey)) {
+    const modalKey = 'completion'
+    if (!hasModalBeenShown(lessonData.id, modalKey)) {
       setShowCompletionAd(true)
-      markModalAsShown(modalKey)
+      markModalAsShown(lessonData.id, modalKey)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lessonData?.id, lessonData?.steps?.length, JSON.stringify(completedSteps[lessonData?.id] || [])])
@@ -113,19 +97,10 @@ export default function LessonView() {
 
   const handleStartOver = () => {
     if (lessonData) {
-      // Reset progress for current lesson only
+      // Reset progress for current lesson only (this also clears modal state)
       resetProgress(lessonData.id)
       // Clear saved code for current lesson
       clearStepCode(lessonData.id)
-      
-      // Clear advertisement modals for this lesson so they show again
-      const stored = sessionStorage.getItem('advertisementModalsShown')
-      if (stored) {
-        const shownModals = JSON.parse(stored)
-        delete shownModals[`${lessonData.id}-step1`]
-        delete shownModals[`${lessonData.id}-completion`]
-        sessionStorage.setItem('advertisementModalsShown', JSON.stringify(shownModals))
-      }
       
       // Reset modal state
       setShowStep1Ad(false)
