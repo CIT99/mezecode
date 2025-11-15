@@ -16,3 +16,10 @@ code {
     monospace;
 }
 
+/* Override Tailwind prose styles to keep inline code inline */
+.prose code:not(pre code) {
+  display: inline !important;
+  padding: 0.125rem 0.375rem;
+  margin: 0;
+}
+

@@ -12,16 +12,23 @@ export default function StepDescription({ stepData }) {
         <div className="prose prose-sm max-w-none prose-gray dark:prose-invert">
           <ReactMarkdown
             components={{
-              code: ({ node, inline, ...props }) => (
-                <code
-                  className={`${
-                    inline
-                      ? 'bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-blue-600 dark:text-blue-300 font-mono text-sm'
-                      : 'block bg-gray-100 dark:bg-gray-800 p-4 rounded-lg my-4 overflow-x-auto font-mono text-sm text-gray-900 dark:text-gray-100'
-                  }`}
-                  {...props}
-                />
-              ),
+              code: ({ node, inline, ...props }) => {
+                if (inline) {
+                  return (
+                    <code
+                      className="!inline bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-blue-600 dark:text-blue-300 font-mono text-sm"
+                      style={{ display: 'inline' }}
+                      {...props}
+                    />
+                  )
+                }
+                return (
+                  <code
+                    className="block bg-gray-100 dark:bg-gray-800 p-4 rounded-lg my-4 overflow-x-auto font-mono text-sm text-gray-900 dark:text-gray-100"
+                    {...props}
+                  />
+                )
+              },
               pre: ({ node, ...props }) => (
                 <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg my-4 overflow-x-auto" {...props} />
               ),
