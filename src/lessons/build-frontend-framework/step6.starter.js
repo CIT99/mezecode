@@ -2,57 +2,25 @@
 // ===============================
 // You've built the framework! Now let's use it to create a complete page.
 //
-// Your task: Create an h1 tag, a p tag, and an a tag with href and target="_blank"
-// There's a button example below - use it as a reference!
+// Your task: Create an appTree that contains:
+// - An h1 tag with a heading
+// - A p tag with some text
+// - An a tag with href and target="_blank"
+// - A button with onClick handler (example shown below)
+//
+// The createElement and render functions are provided for you in the preview.
+// You just need to export an appTree using exports.createElement!
 
-function createElement(tag, props = {}, ...children) {
-  return {
-    type: tag,
-    props: props,
-    children: children
-  };
-}
+// TODO: Create your appTree using exports.createElement
+// The preview will use the render function to render your elements
 
-function render(element, container) {
-  const domElement = document.createElement(element.type);
+exports.appTree = exports.createElement(
+    'div',
+    {},
+    exports.createElement('div', {style: "background: cyan;text-align:center; padding: 1rem"}, 
+                         exports.createElement("strong", {style:"display:block;"}, 'Congratulations! You are almost done!'),
+                         exports.createElement("span", {}, 'Add some elements on the page!')),
+    // Your code here:
   
-  // Handle props
-  Object.keys(element.props).forEach(key => {
-    if (key === 'className') {
-      domElement.setAttribute('class', element.props[key]);
-    } else if (key.startsWith('on') && typeof element.props[key] === 'function') {
-      const eventName = key.slice(2).toLowerCase();
-      domElement.addEventListener(eventName, element.props[key]);
-    } else {
-      domElement.setAttribute(key, element.props[key]);
-    }
-  });
-  
-  // Render children
-  element.children.forEach(child => {
-    if (typeof child === 'string') {
-      domElement.appendChild(document.createTextNode(child));
-    } else {
-      render(child, domElement);
-    }
-  });
-  
-  container.appendChild(domElement);
-}
-
-// Example: Button with onClick handler
-const container = document.getElementById('root') || document.body;
-const button = createElement('button', { 
-  onClick: () => alert('Almost there!') 
-}, 'Click me');
-render(button, container);
-
-// TODO: Create an h1 tag with a heading
-// TODO: Create a p tag with some text
-// TODO: Create an a tag with href and target="_blank"
-// Your code here:
-
-// Don't forget to export your functions!
-exports.createElement = createElement;
-exports.render = render;
-
+    
+  );

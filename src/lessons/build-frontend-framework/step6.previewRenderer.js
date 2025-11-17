@@ -60,7 +60,55 @@ export const createPreviewHTML = (code) => {
     `
   }
 
-  const escapedCode = escapeJs(sanitizedCode)
+  // Escape for template literal insertion (escape backticks, ${}, and backslashes)
+  const escapedCode = sanitizedCode
+    .replace(/\\/g, '\\\\')  // Escape backslashes
+    .replace(/`/g, '\\`')   // Escape backticks
+    .replace(/\${/g, '\\${') // Escape ${ for template literals
+  
+  // Framework code provided in background
+  const frameworkCode = `
+function createElement(tag, props = {}, ...children) {
+  return {
+    type: tag,
+    props: props,
+    children: children
+  };
+}
+
+function render(element, container) {
+  const domElement = document.createElement(element.type);
+  
+  // Handle props
+  Object.keys(element.props).forEach(key => {
+    if (key === 'className') {
+      domElement.setAttribute('class', element.props[key]);
+    } else if (key.startsWith('on') && typeof element.props[key] === 'function') {
+      const eventName = key.slice(2).toLowerCase();
+      domElement.addEventListener(eventName, element.props[key]);
+    } else {
+      domElement.setAttribute(key, element.props[key]);
+    }
+  });
+  
+  // Render children
+  element.children.forEach(child => {
+    if (typeof child === 'string') {
+      domElement.appendChild(document.createTextNode(child));
+    } else {
+      render(child, domElement);
+    }
+  });
+  
+  container.appendChild(domElement);
+}
+
+// Exports are set up
+const exports = {};
+const module = { exports: exports };
+exports.createElement = createElement;
+exports.render = render;
+`
   
   return `
 <!DOCTYPE html>
@@ -117,33 +165,26 @@ export const createPreviewHTML = (code) => {
   <div id="root"></div>
   <script>
     try {
-      const exports = {};
-      const module = { exports: exports };
+      ${frameworkCode}
       
+      // User's code (should export appTree)
       ${escapedCode}
       
-      // The code should have already rendered to #root
-      // If not, let's render an example
-      if (exports.createElement && exports.render) {
-        const container = document.getElementById('root');
-        // Clear any existing content
-        container.innerHTML = '';
-        
-        // Render example elements if they don't exist
-        const h1 = exports.createElement('h1', {}, 'Welcome!');
-        const p = exports.createElement('p', {}, 'Create your h1, p, a, and button elements!');
-        const link = exports.createElement('a', { 
-          href: 'https://example.com', 
-          target: '_blank' 
-        }, 'Example Link');
-        const button = exports.createElement('button', { 
-          onClick: () => alert('Almost there!') 
-        }, 'Click me');
-        
-        exports.render(h1, container);
-        exports.render(p, container);
-        exports.render(link, container);
-        exports.render(button, container);
+      // Render the appTree if it exists
+      const container = document.getElementById('root');
+      if (exports.appTree) {
+        exports.render(exports.appTree, container);
+      } else {
+        // Fallback: show example if appTree not exported
+        const defaultTree = exports.createElement(
+          'div',
+          {},
+          exports.createElement('h1', {}, 'Welcome!'),
+          exports.createElement('p', {}, 'Create your h1, p, a, and button elements!'),
+          exports.createElement('a', { href: 'https://example.com', target: '_blank' }, 'Example Link'),
+          exports.createElement('button', { onClick: () => alert('Almost there!') }, 'Click me')
+        );
+        exports.render(defaultTree, container);
       }
     } catch (error) {
       const root = document.getElementById('root');
