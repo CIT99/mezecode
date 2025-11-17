@@ -165,9 +165,48 @@ exports.render = render;
   <div id="root"></div>
   <script>
     try {
+      // Block dangerous window properties before executing student code
+      // This provides runtime protection in addition to static code analysis
+      try {
+        // Block access to parent window
+        Object.defineProperty(window, 'parent', { 
+          get: function() { 
+            throw new Error('Access to window.parent is not allowed. This is restricted to prevent affecting the main application.'); 
+          }, 
+          configurable: false 
+        });
+        Object.defineProperty(window, 'top', { 
+          get: function() { 
+            throw new Error('Access to window.top is not allowed. This is restricted to prevent affecting the main application.'); 
+          }, 
+          configurable: false 
+        });
+        Object.defineProperty(window, 'frameElement', { 
+          get: function() { 
+            throw new Error('Access to window.frameElement is not allowed.'); 
+          }, 
+          configurable: false 
+        });
+        Object.defineProperty(window, 'frames', { 
+          get: function() { 
+            return []; 
+          }, 
+          configurable: false 
+        });
+        Object.defineProperty(window, 'postMessage', { 
+          get: function() { 
+            return undefined; 
+          }, 
+          configurable: false 
+        });
+      } catch(e) {
+        // If properties are non-configurable, that's okay - the sanitizer will catch usage
+      }
+      
       ${frameworkCode}
       
       // User's code (should export appTree)
+      // Sanitizer has already validated it doesn't contain dangerous patterns
       ${escapedCode}
       
       // Render the appTree if it exists
@@ -180,7 +219,7 @@ exports.render = render;
           'div',
           {},
           exports.createElement('h1', {}, 'Welcome!'),
-          exports.createElement('p', {}, 'Create your h1, p, a, and button elements!'),
+          exports.createElement('p', {}, 'Create your h1, p, and a elements!'),
           exports.createElement('a', { href: 'https://example.com', target: '_blank' }, 'Example Link'),
           exports.createElement('button', { onClick: () => alert('Almost there!') }, 'Click me')
         );

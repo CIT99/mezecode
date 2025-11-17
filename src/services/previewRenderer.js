@@ -127,11 +127,64 @@ export const createPreviewHTML = (code) => {
   <div id="root"></div>
   <script>
     try {
+      // Block dangerous window properties before executing student code
+      // This provides runtime protection in addition to static code analysis
+      const originalParent = window.parent;
+      const originalTop = window.top;
+      const originalFrameElement = window.frameElement;
+      const originalFrames = window.frames;
+      const originalPostMessage = window.postMessage;
+      
+      try {
+        // Block access to parent window
+        Object.defineProperty(window, 'parent', { 
+          get: function() { 
+            throw new Error('Access to window.parent is not allowed. This is restricted to prevent affecting the main application.'); 
+          }, 
+          configurable: false 
+        });
+        Object.defineProperty(window, 'top', { 
+          get: function() { 
+            throw new Error('Access to window.top is not allowed. This is restricted to prevent affecting the main application.'); 
+          }, 
+          configurable: false 
+        });
+        Object.defineProperty(window, 'frameElement', { 
+          get: function() { 
+            throw new Error('Access to window.frameElement is not allowed.'); 
+          }, 
+          configurable: false 
+        });
+        Object.defineProperty(window, 'frames', { 
+          get: function() { 
+            return []; 
+          }, 
+          configurable: false 
+        });
+        Object.defineProperty(window, 'postMessage', { 
+          get: function() { 
+            return undefined; 
+          }, 
+          configurable: false 
+        });
+      } catch(e) {
+        // If properties are non-configurable, that's okay - the sanitizer will catch usage
+      }
+      
       // Execute user code in a module-like context
       const exports = {};
       const module = { exports: exports };
       
+      // Execute student code (sanitizer has already validated it doesn't contain dangerous patterns)
       ${escapedCode}
+      
+      // Restore original properties (though they shouldn't be accessible anyway due to iframe sandbox)
+      // This is just for cleanup
+      try {
+        if (originalParent !== undefined) {
+          Object.defineProperty(window, 'parent', { value: originalParent, configurable: true, writable: true });
+        }
+      } catch(e) {}
       
       // Try to render something if createElement and render exist
       if (exports.createElement && exports.render) {

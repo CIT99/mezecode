@@ -51,7 +51,7 @@ export default function LivePreview() {
           <iframe
             ref={iframeRef}
             className="w-full h-full border-0"
-            sandbox="allow-scripts"
+            sandbox="allow-scripts allow-popups allow-modals"
             title="Code Preview"
           />
         )}

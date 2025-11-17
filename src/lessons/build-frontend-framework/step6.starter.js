@@ -14,9 +14,11 @@
 exports.appTree = exports.createElement(
     'div',
     {},
-    exports.createElement('div', {style: "background: cyan;text-align:center; padding: 1rem"}, 
-                         exports.createElement("strong", {style:"display:block;"}, 'Congratulations! You are almost done!'),
-                         exports.createElement("span", {}, 'Add some elements on the page!')),
+    exports.createElement('div', {style: "background: cyan;text-align:center; padding: 1rem; border-radius:.5rem;"}, 
+      exports.createElement("strong", {style:"display:block;"}, 'Congratulations! You are almost done!'),
+      exports.createElement("span", {style:"display:block;"}, 'Add some elements on the page!'),
+      exports.createElement('button', { onClick: () => alert('You can do it!')}, 'Click me'),
+      ),
     // Your code here:
   
     

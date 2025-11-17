@@ -98,21 +98,45 @@ export const validateCode = (code) => {
     return { valid: false, reason: 'Code is too long' }
   }
   
-  // Check for potentially dangerous patterns
+  // Check for potentially dangerous patterns that could affect the main app
   const dangerousPatterns = [
-    /eval\s*\(/i,
-    /Function\s*\(/i,
-    /setTimeout\s*\(/i,
-    /setInterval\s*\(/i,
-    /document\.cookie/i,
-    /localStorage\.setItem/i,
-    /sessionStorage\.setItem/i,
-    /XMLHttpRequest/i,
-    /fetch\s*\(/i,
+    // Code execution
+    { pattern: /eval\s*\(/i, reason: 'eval() is not allowed' },
+    { pattern: /\bFunction\s*\(/, reason: 'Function constructor is not allowed' },
+    
+    // Timers (can be used for DoS)
+    { pattern: /setTimeout\s*\(/i, reason: 'setTimeout() is not allowed' },
+    { pattern: /setInterval\s*\(/i, reason: 'setInterval() is not allowed' },
+    
+    // Storage APIs
+    { pattern: /document\.cookie/i, reason: 'document.cookie is not allowed' },
+    { pattern: /localStorage\.setItem/i, reason: 'localStorage is not allowed' },
+    { pattern: /sessionStorage\.setItem/i, reason: 'sessionStorage is not allowed' },
+    
+    // Network requests
+    { pattern: /XMLHttpRequest/i, reason: 'XMLHttpRequest is not allowed' },
+    { pattern: /fetch\s*\(/i, reason: 'fetch() is not allowed' },
+    
+    // Direct document manipulation (students should use the provided render function)
+    { pattern: /document\.(body|head|documentElement)/i, reason: 'Direct access to document.body, document.head, or document.documentElement is not allowed. Use the provided render function instead.' },
+    { pattern: /document\.getElementById\s*\(\s*['"]root['"]\s*\)/i, reason: 'Access to document.getElementById(\'root\') is not allowed. Use the container provided to your render function instead.' },
+    
+    // Window parent access (could affect main app)
+    { pattern: /window\.(parent|top|frameElement)/i, reason: 'Access to window.parent, window.top, or window.frameElement is not allowed' },
+    { pattern: /self\.(parent|top)/i, reason: 'Access to self.parent or self.top is not allowed' },
+    { pattern: /frames\[/i, reason: 'Access to frames array is not allowed' },
+    { pattern: /parent\./i, reason: 'Access to parent window is not allowed' },
+    { pattern: /top\./i, reason: 'Access to top window is not allowed' },
+    
+    // Other dangerous APIs
+    { pattern: /postMessage\s*\(/i, reason: 'postMessage() is not allowed' },
   ]
   
-  // Note: We allow these in test code, but we're running in sandboxed iframe
-  // This is more for documentation/awareness
+  for (const { pattern, reason } of dangerousPatterns) {
+    if (pattern.test(code)) {
+      return { valid: false, reason }
+    }
+  }
   
   return { valid: true }
 }
