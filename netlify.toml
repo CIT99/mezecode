@@ -28,7 +28,7 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     
     # Permissions Policy (formerly Feature-Policy)
-    Permissions-Policy = "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), speaker=()"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=()"
     
     # Strict Transport Security (HSTS) - only enable if using HTTPS
     # Strict-Transport-Security = "max-age=31536000; includeSubDomains"
