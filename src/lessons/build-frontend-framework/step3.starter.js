@@ -1,4 +1,4 @@
-// Step 2: Build a Render Function
+// Step 3: Build a Render Function
 // =================================
 // You should already have createElement from step 1
 function createElement(tag, props = {}, ...children) {

@@ -1,4 +1,4 @@
-// Step 4: Add Event Listeners
+// Step 5: Add Event Listeners
 // ============================
 // You should have createElement and render from previous steps
 function createElement(tag, props = {}, ...children) {

@@ -1,4 +1,4 @@
-// Step 3: Add className Support
+// Step 4: Add className Support
 // ==============================
 // You should have createElement and render from previous steps
 function createElement(tag, props = {}, ...children) {
