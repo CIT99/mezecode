@@ -1,5 +1,6 @@
 {
   "id": "build-frontend-framework",
+  "path": "build-frontend-framework",
   "title": "Build a Frontend Framework",
   "description": "Learn to build a simple frontend framework from scratch. You'll create a basic 🧩 component system and ⚙️ rendering engine.",
   "steps": [

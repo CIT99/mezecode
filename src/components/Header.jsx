@@ -1,73 +1,30 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Menu, Sun, Moon } from 'lucide-react'
 import { getAllLessons } from '../lessons/index'
 import { useLessonStore } from '../store/lessonStore'
 import { useProgressStore } from '../store/progressStore'
 import { useThemeStore } from '../store/themeStore'
-import { loadLesson } from '../services/lessonLoader'
 import Drawer from './Drawer'
 
 export default function Header() {
-  const { currentLesson, lessonData, currentStep, setCurrentLesson, setLessonData, setStepData, loadStepCode, resetLesson, setCurrentStep, clearStepCode } = useLessonStore()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { currentLesson, lessonData, setStepData, loadStepCode, resetLesson, setCurrentStep, clearStepCode } = useLessonStore()
   const { resetProgress } = useProgressStore()
   const { theme, toggleTheme } = useThemeStore()
   const lessons = getAllLessons()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
-  // Restore persisted lesson on page load
-  useEffect(() => {
-    // Only run once on mount to restore persisted lesson
-    const persistedLesson = currentLesson
-    if (persistedLesson && !lessonData) {
-      // Lesson is persisted but data isn't loaded yet
-      loadLesson(persistedLesson)
-        .then((data) => {
-          setLessonData(data)
-          
-          // Load the persisted step (or first step if none persisted)
-          const stepIndex = currentStep || 0
-          if (data.steps && data.steps[stepIndex]) {
-            const step = data.steps[stepIndex]
-            setStepData(step)
-            loadStepCode(step.starterCode || '')
-          } else if (data.steps && data.steps.length > 0) {
-            // Fallback to first step
-            setCurrentStep(0)
-            const firstStep = data.steps[0]
-            setStepData(firstStep)
-            loadStepCode(firstStep.starterCode || '')
-          }
-        })
-        .catch((error) => {
-          console.error('Failed to restore lesson:', error)
-          resetLesson() // Reset if restoration fails
-        })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Only run once on mount
-
-  const handleLessonSelect = async (lessonId) => {
-    try {
-      resetLesson()
-      const lessonData = await loadLesson(lessonId)
-      setCurrentLesson(lessonId)
-      setLessonData(lessonData)
-      
-      // Load first step
-      if (lessonData.steps && lessonData.steps.length > 0) {
-        const firstStep = lessonData.steps[0]
-        setStepData(firstStep)
-        loadStepCode(firstStep.starterCode || '')
-      }
-      setIsDrawerOpen(false) // Close drawer after selection
-    } catch (error) {
-      console.error('Failed to load lesson:', error)
-      alert('Failed to load lesson. Please try again.')
-    }
+  const handleLessonSelect = (lesson) => {
+    // Navigate to lesson path
+    navigate(`/${lesson.path}`)
+    setIsDrawerOpen(false) // Close drawer after selection
   }
 
   const handleCloseLesson = () => {
     resetLesson()
+    navigate('/')
     setIsDrawerOpen(false)
   }
 
@@ -93,7 +50,12 @@ export default function Header() {
       <header className="bg-gray-800 dark:bg-gray-800 border-b border-gray-700 dark:border-gray-700 px-2 sm:px-4 py-2 sm:py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-4 flex-1">
-            <h1 className="text-2xl sm:text-4xl font-bold font-code bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent tracking-wider">Mezcode</h1>
+            <button
+              onClick={() => navigate('/')}
+              className="cursor-pointer"
+            >
+              <h1 className="text-2xl sm:text-4xl font-bold font-code bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent tracking-wider">Mezcode</h1>
+            </button>
           </div>
           <div className="flex-1 hidden md:flex justify-center">
             {lessonData && (
@@ -132,9 +94,9 @@ export default function Header() {
             {lessons.map((lesson) => (
               <button
                 key={lesson.id}
-                onClick={() => handleLessonSelect(lesson.id)}
+                onClick={() => handleLessonSelect(lesson)}
                 className={`w-full text-left px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg transition-colors min-h-[44px] ${
-                  currentLesson === lesson.id
+                  location.pathname === `/${lesson.path}`
                     ? 'bg-blue-600 dark:bg-blue-600 text-white dark:text-white'
                     : 'bg-gray-700 dark:bg-gray-700 text-gray-300 dark:text-gray-300 hover:bg-gray-600 dark:hover:bg-gray-600'
                 }`}

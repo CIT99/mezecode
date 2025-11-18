@@ -6,6 +6,7 @@
 export const lessons = [
   {
     id: 'build-frontend-framework',
+    path: 'build-frontend-framework',
     title: 'Build a Frontend Framework',
     description: 'Learn to build a simple frontend framework from scratch',
     icon: '⚛️',
@@ -15,6 +16,10 @@ export const lessons = [
 
 export const getLessonById = (id) => {
   return lessons.find(lesson => lesson.id === id)
+}
+
+export const getLessonByPath = (path) => {
+  return lessons.find(lesson => lesson.path === path)
 }
 
 export const getAllLessons = () => {
