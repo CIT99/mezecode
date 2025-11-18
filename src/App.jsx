@@ -20,10 +20,10 @@ function App() {
         {currentLesson ? (
           <LessonView />
         ) : (
-          <div className="h-full flex items-center justify-center">
+          <div className="h-full flex items-center justify-center px-4">
             <div className="text-center">
-              <h1 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">Welcome to Mezcode</h1>
-              <p className="text-gray-600 dark:text-gray-400">Select a lesson to get started</p>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">Welcome to Mezcode</h1>
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Select a lesson to get started</p>
             </div>
           </div>
         )}

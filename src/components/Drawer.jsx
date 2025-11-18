@@ -36,17 +36,17 @@ export default function Drawer({ isOpen, onClose, children, title }) {
       />
       
       {/* Drawer */}
-      <div className="fixed inset-y-0 right-0 w-80 bg-gray-800 dark:bg-gray-800 border-l border-gray-700 dark:border-gray-700 z-50 shadow-xl transform transition-transform duration-300 ease-in-out">
+      <div className="fixed inset-y-0 right-0 w-full sm:w-96 md:w-80 bg-gray-800 dark:bg-gray-800 border-l border-gray-700 dark:border-gray-700 z-50 shadow-xl transform transition-transform duration-300 ease-in-out">
         {/* Drawer Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-700 dark:border-gray-700">
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b border-gray-700 dark:border-gray-700">
           {title && (
-            <h2 className="text-lg font-semibold text-white dark:text-white">
+            <h2 className="text-base sm:text-lg font-semibold text-white dark:text-white">
               {title}
             </h2>
           )}
           <button
             onClick={onClose}
-            className="p-1 text-gray-400 hover:text-white dark:text-gray-400 dark:hover:text-white transition-colors rounded hover:bg-gray-700 dark:hover:bg-gray-700"
+            className="p-2 text-gray-400 hover:text-white dark:text-gray-400 dark:hover:text-white transition-colors rounded hover:bg-gray-700 dark:hover:bg-gray-700 min-w-[44px] min-h-[44px] flex items-center justify-center"
             title="Close"
           >
             <X size={20} />

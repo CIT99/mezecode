@@ -1,15 +1,18 @@
 import { useState, useRef, useEffect } from 'react'
 
-export default function SplitPane({ left, right, defaultSplit = 50 }) {
+export default function SplitPane({ left, right, defaultSplit = 50, isMobile = false, activePane = 'left' }) {
   const [split, setSplit] = useState(defaultSplit)
   const [isDragging, setIsDragging] = useState(false)
   const containerRef = useRef(null)
 
   const handleMouseDown = () => {
+    if (isMobile) return // Disable dragging on mobile
     setIsDragging(true)
   }
 
   useEffect(() => {
+    if (isMobile) return // Disable drag handlers on mobile
+
     const handleMouseMove = (e) => {
       if (!isDragging || !containerRef.current) return
       
@@ -36,8 +39,24 @@ export default function SplitPane({ left, right, defaultSplit = 50 }) {
       document.body.style.cursor = ''
       document.body.style.userSelect = ''
     }
-  }, [isDragging])
+  }, [isDragging, isMobile])
 
+  // Mobile: show only active pane
+  if (isMobile) {
+    return (
+      <div ref={containerRef} className="h-full relative">
+        {activePane === 'left' ? (
+          <div className="h-full w-full">{left}</div>
+        ) : activePane === 'tests' ? (
+          <div className="h-full w-full">{right}</div>
+        ) : (
+          <div className="h-full w-full">{right}</div>
+        )}
+      </div>
+    )
+  }
+
+  // Desktop: show side-by-side split
   return (
     <div ref={containerRef} className="flex h-full relative">
       <div className="h-full overflow-hidden" style={{ width: `${split}%` }}>

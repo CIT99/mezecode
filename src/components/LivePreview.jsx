@@ -38,14 +38,14 @@ export default function LivePreview() {
 
   return (
     <div className="h-full w-full flex flex-col bg-white">
-      <div className="bg-gray-100 border-b border-gray-300 px-4 py-2">
-        <h3 className="text-sm font-semibold text-gray-700">Live Preview</h3>
+      <div className="bg-gray-100 border-b border-gray-300 px-3 sm:px-4 py-2">
+        <h3 className="text-xs sm:text-sm font-semibold text-gray-700">Live Preview</h3>
       </div>
       <div className="flex-1 relative">
         {error ? (
-          <div className="absolute inset-0 p-4 bg-red-50 text-red-800">
-            <div className="font-semibold mb-2">Preview Error:</div>
-            <pre className="text-sm whitespace-pre-wrap">{error}</pre>
+          <div className="absolute inset-0 p-3 sm:p-4 bg-red-50 text-red-800">
+            <div className="text-sm sm:text-base font-semibold mb-2">Preview Error:</div>
+            <pre className="text-xs sm:text-sm whitespace-pre-wrap">{error}</pre>
           </div>
         ) : (
           <iframe

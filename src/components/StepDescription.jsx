@@ -5,11 +5,11 @@ export default function StepDescription({ stepData }) {
 
   return (
     <div className="text-gray-900 dark:text-white">
-      <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
+      <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-900 dark:text-white">
         Step {stepData.number}: {stepData.title}
       </h2>
       {stepData.description && (
-        <div className="prose prose-sm max-w-none prose-gray dark:prose-invert">
+        <div className="prose prose-sm sm:prose-base max-w-none prose-gray dark:prose-invert">
           <ReactMarkdown
             components={{
               code: ({ node, inline, ...props }) => {

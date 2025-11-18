@@ -35,16 +35,16 @@ export default function LessonHeader({ lessonData, onClose, onStartOver, isCompl
     if (!shouldRender) return null
     
     return (
-      <div className={`bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 border-b border-emerald-200 dark:border-emerald-700 px-4 py-2 relative transition-opacity duration-1000 ${shouldShow ? 'opacity-100' : 'opacity-0'}`}>
-        <div className="flex items-center justify-center gap-3">
-          <Trophy size={16} className="text-emerald-600 dark:text-emerald-400" />
-          <span className="text-sm font-medium text-emerald-900 dark:text-emerald-100">
+      <div className={`bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 border-b border-emerald-200 dark:border-emerald-700 px-3 sm:px-4 py-2 relative transition-opacity duration-1000 ${shouldShow ? 'opacity-100' : 'opacity-0'}`}>
+        <div className="flex items-center justify-center gap-2 sm:gap-3">
+          <Trophy size={14} className="sm:w-4 sm:h-4 text-emerald-600 dark:text-emerald-400" />
+          <span className="text-xs sm:text-sm font-medium text-emerald-900 dark:text-emerald-100">
             Lesson Complete
           </span>
           {onStartOver && (
             <button
               onClick={onStartOver}
-              className="ml-2 px-2 py-1 text-xs text-emerald-700 dark:text-emerald-300 hover:text-emerald-900 dark:hover:text-emerald-100 hover:bg-emerald-100 dark:hover:bg-emerald-800/50 rounded transition-colors"
+              className="ml-1 sm:ml-2 px-2 py-1 text-xs text-emerald-700 dark:text-emerald-300 hover:text-emerald-900 dark:hover:text-emerald-100 hover:bg-emerald-100 dark:hover:bg-emerald-800/50 rounded transition-colors min-h-[32px]"
               title="Restart lesson"
             >
               Restart
@@ -54,10 +54,10 @@ export default function LessonHeader({ lessonData, onClose, onStartOver, isCompl
         {onClose && (
           <button
             onClick={onClose}
-            className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-emerald-700 dark:text-emerald-300 hover:text-emerald-900 dark:hover:text-emerald-100 transition-colors rounded hover:bg-emerald-100 dark:hover:bg-emerald-800/50"
+            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-1.5 sm:p-1 text-emerald-700 dark:text-emerald-300 hover:text-emerald-900 dark:hover:text-emerald-100 transition-colors rounded hover:bg-emerald-100 dark:hover:bg-emerald-800/50 min-w-[32px] min-h-[32px] flex items-center justify-center"
             title="Close"
           >
-            <X size={18} />
+            <X size={16} className="sm:w-[18px] sm:h-[18px]" />
           </button>
         )}
       </div>
@@ -66,19 +66,19 @@ export default function LessonHeader({ lessonData, onClose, onStartOver, isCompl
 
   // Normal description view
   return (
-    <div className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 relative">
-      <div className="flex items-center justify-center">
+    <div className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-3 sm:p-4 relative">
+      <div className="flex items-center justify-center pr-8 sm:pr-10">
         {lessonData.description && (
-          <p className="text-gray-700 dark:text-gray-300 text-center">{lessonData.description}</p>
+          <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 text-center">{lessonData.description}</p>
         )}
       </div>
       {onClose && (
         <button
           onClick={onClose}
-          className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-1.5 sm:p-1 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors rounded hover:bg-gray-200 dark:hover:bg-gray-700 min-w-[32px] min-h-[32px] flex items-center justify-center"
           title="Close description"
         >
-          <X size={20} />
+          <X size={18} className="sm:w-5 sm:h-5" />
         </button>
       )}
     </div>
