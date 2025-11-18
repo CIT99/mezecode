@@ -51,10 +51,16 @@ export const useTestRunner = () => {
     }
   }, [currentLesson, currentStep, saveTestResults, markStepComplete])
 
+  const resetTestResults = useCallback(() => {
+    setTestResults(null)
+    setIsRunning(false)
+  }, [])
+
   return {
     runTests,
     testResults,
     isRunning,
+    resetTestResults,
   }
 }
 

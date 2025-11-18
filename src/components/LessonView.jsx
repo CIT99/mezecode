@@ -30,7 +30,7 @@ export default function LessonView() {
   } = useLessonStore()
 
   const { resetProgress, completedSteps, hasModalBeenShown, markModalAsShown } = useProgressStore()
-  const { runTests, testResults, isRunning } = useTestRunner()
+  const { runTests, testResults, isRunning, resetTestResults } = useTestRunner()
   const { resetCode } = useCodeExecution()
   const isMobile = useMobile()
   const [previewContent, setPreviewContent] = useState('preview') // 'preview' | 'instructions' | 'hint'
@@ -106,6 +106,9 @@ export default function LessonView() {
       resetProgress(lessonData.id)
       // Clear saved code for current lesson
       clearStepCode(lessonData.id)
+      
+      // Reset test results to prevent stale data from triggering modals
+      resetTestResults()
       
       // Reset modal state
       setShowStep1Ad(false)
