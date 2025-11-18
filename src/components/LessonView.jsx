@@ -60,8 +60,13 @@ export default function LessonView() {
     const completed = completedSteps[lessonData.id] || []
     const isFirstStepComplete = completed.includes(0)
     
+    // Don't show modal if progress was just reset (completed steps is empty)
+    // This prevents showing modal after "Start Over" when testResults still has stale data
+    if (completed.length === 0) return
+    
     // Also check if we just completed step 0 (for immediate feedback)
-    const justCompletedFirstStep = currentStep === 0 && testResults?.passed
+    // This handles the case where tests pass but step hasn't been marked complete yet
+    const justCompletedFirstStep = currentStep === 0 && testResults?.passed && !isFirstStepComplete
     
     if (!isFirstStepComplete && !justCompletedFirstStep) return
     
